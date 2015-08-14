@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/copy.png</file>
+        <file>images/cut.png</file>
+        <file>images/new.png</file>
+        <file>images/open.png</file>
+        <file>images/paste.png</file>
+        <file>images/save.png</file>
+        <file>images/chiko/7 压载I 底座连接块.jpg</file>
+        <file>images/chiko/CHIKO软件登录界面-02 拷贝.gif</file>
+        <file>images/chiko/CK-BT21-.jpg</file>
+        <file>images/chiko/CK-BT21-B.jpg</file>
+        <file>images/chiko/CK-BT21-S.jpg</file>
+        <file>images/chiko/CK-BT23-.gif</file>
+        <file>images/chiko/CK-BT31-.tif</file>
+        <file>images/chiko/CK-BT31-B.jpg</file>
+        <file>images/chiko/CK-BT31-S.jpg</file>
+        <file>images/chiko/CK-BT33-.gif</file>
+        <file>images/chiko/CK-BT-BSK.jpg</file>
+        <file>images/chiko/CK-BT-R3500.jpg</file>
+        <file>images/chiko/CK-BT-RSK.jpg</file>
+        <file>images/chiko/CK-FPA-BT1000.jpg</file>
+        <file>images/chiko/CK-FTE-F.jpg</file>
+        <file>images/chiko/CK-FTM-F.jpg</file>
+        <file>images/chiko/head.tif</file>
+        <file>images/chiko/tail.tif</file>
+    </qresource>
+</RCC>
