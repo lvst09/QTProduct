@@ -7,7 +7,6 @@
         <file>images/paste.png</file>
         <file>images/save.png</file>
         <file>images/chiko/7 压载I 底座连接块.jpg</file>
-        <file>images/chiko/CHIKO软件登录界面-02 拷贝.gif</file>
         <file>images/chiko/CK-BT21-.jpg</file>
         <file>images/chiko/CK-BT21-B.jpg</file>
         <file>images/chiko/CK-BT21-S.jpg</file>
@@ -24,5 +23,6 @@
         <file>images/chiko/CK-FTM-F.jpg</file>
         <file>images/chiko/head.tif</file>
         <file>images/chiko/tail.tif</file>
+        <file>images/chiko/login.png</file>
     </qresource>
 </RCC>

@@ -17,14 +17,16 @@ SOURCES += main.cpp\
     qexcel.cpp \
     mainwidget.cpp \
     mainwindow.cpp \
-    mdichild.cpp
+    mdichild.cpp \
+    login.cpp
 
 HEADERS  += \
     classwizard.h \
     qexcel.h \
     mainwidget.h \
     mainwindow.h \
-    mdichild.h
+    mdichild.h \
+    login.h
 
 FORMS    += mainwindow.ui
 

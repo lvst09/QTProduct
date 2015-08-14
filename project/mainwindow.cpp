@@ -71,7 +71,6 @@ MainWindow::MainWindow()
     updateMenus();
 
     readSettings();
-
     setWindowTitle(tr("CHIKO"));
 //    setUnifiedTitleAndToolBarOnMac(true);
 
