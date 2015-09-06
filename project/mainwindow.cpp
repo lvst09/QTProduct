@@ -81,7 +81,7 @@ MainWindow::MainWindow()
 
     this->setWindowFlags(flags);
 
-    this->resize(1000,800);
+    this->resize(1000,600);
     this->newFile();
 }
 

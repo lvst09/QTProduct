@@ -26,6 +26,4 @@ int main(int argc, char *argv[])
 //        mainWin.openFile(fileName);
     mainWin.show();
     return app.exec();
-
-
 }

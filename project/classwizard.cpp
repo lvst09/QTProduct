@@ -80,6 +80,8 @@ void writePatternFillCell(Document &xlsx, const QString &cell, Format::FillPatte
 // 最后完成时执行该槽，将信息写入生成文件
 int judgeEGType(int vnum,bool mcon,int orientation);
 int componentNumber(int rowIndex,int columnIndex,int N,int M,int V,float L);
+QString findImageString(QString name);
+
 void ClassWizard::save(QString fileName)
 {
     QXlsx::Document xlsx;
@@ -214,14 +216,7 @@ void ClassWizard::save(QString fileName)
 
     format1.setFontSize(22);
     xlsx.setRowFormat(12, format1);
-//    xlsx.setRowFormat(13, format1);
 
-//    xlsx.mergeCells("A12:A13", format);
-//    xlsx.mergeCells("B12:B13", format);
-//    xlsx.mergeCells("C12:E13", format);
-//    xlsx.mergeCells("F12:F13", format);
-//    xlsx.mergeCells("G12:G13", format);
-//    xlsx.mergeCells("H12:H13", format);
     xlsx.mergeCells("C12:E12", format);
     xlsx.setRowHeight("13",35.1*ratio);
 
@@ -262,6 +257,7 @@ void ClassWizard::save(QString fileName)
         xlsx.write(cellString,QString::number(i+1));
         xlsx.setRowFormat(i+14, format);
 
+        QString imageName ;
         for(int j = 0 ; j < resultTable->columnCount(); j++)
         {
             char column = 'B' ;
@@ -277,8 +273,22 @@ void ClassWizard::save(QString fileName)
 
             QTableWidgetItem * item = resultTable->item( i, j);
 
+            if(j==0)
+            {
+                QString name = item->text();
+                imageName = findImageString(name);
+            }
 
-            xlsx.write(cellString,item->text());
+            if(j==2)
+            {
+                QImage image(imageName);
+                QImage small = image.scaled(60,60,Qt::KeepAspectRatio);
+
+                xlsx.insertImage(i+12,5, small);
+            }else
+            {
+                xlsx.write(cellString,item->text());
+            }
         }
 
 //      cellString = "A" +QString::number(i+13)  ;
@@ -299,156 +309,10 @@ void ClassWizard::save(QString fileName)
 
 
 void ClassWizard::accept()
-//! [3] //! [4]
 {
-//    save();
     QDialog::accept();
     return;
-    QByteArray className = field("className").toByteArray();
-    QByteArray baseClass = field("baseClass").toByteArray();
-    QByteArray macroName = field("macroName").toByteArray();
-    QByteArray baseInclude = field("baseInclude").toByteArray();
-
-    QString outputDir = field("outputDir").toString();
-    QString header = field("header").toString();
-    QString implementation = field("implementation").toString();
-//! [4]
-
-    QByteArray block;
-
-    if (field("comment").toBool()) {
-        block += "/*\n";
-        block += "    " + header.toLatin1() + "\n";  // 头文件
-        block += "*/\n";
-        block += "\n";
-    }
-    if (field("protect").toBool()) {
-        block += "#ifndef " + macroName + "\n";
-        block += "#define " + macroName + "\n";
-        block += "\n";
-    }
-    if (field("includeBase").toBool()) {
-        block += "#include " + baseInclude + "\n";  // 引用头文件
-        block += "\n";
-    }
-
-    block += "class " + className;                  // 定义类
-    if (!baseClass.isEmpty())
-        block += " : public " + baseClass;
-    block += "\n";
-    block += "{\n";
-
-    /* qmake ignore Q_OBJECT */
-
-    if (field("qobjectMacro").toBool()) {
-        block += "    Q_OBJECT\n";
-        block += "\n";
-    }
-    block += "public:\n";
-
-    if (field("qobjectCtor").toBool()) {            // 定义各种风格构造函数
-        block += "    " + className + "(QObject *parent = 0);\n";
-    } else if (field("qwidgetCtor").toBool()) {
-        block += "    " + className + "(QWidget *parent = 0);\n";
-    } else if (field("defaultCtor").toBool()) {
-        block += "    " + className + "();\n";
-        if (field("copyCtor").toBool()) {
-            block += "    " + className + "(const " + className + " &other);\n";
-            block += "\n";
-            block += "    " + className + " &operator=" + "(const " + className
-                     + " &other);\n";
-        }
-    }
-    block += "};\n";
-
-    if (field("protect").toBool()) {
-        block += "\n";
-        block += "#endif\n";
-    }
-
-    QFile headerFile(outputDir + "/" + header);
-    if (!headerFile.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(0, QObject::tr("Simple Wizard"),
-                             QObject::tr("Cannot write file %1:\n%2")
-                             .arg(headerFile.fileName())
-                             .arg(headerFile.errorString()));
-        return;
-    }
-    headerFile.write(block);
-
-    block.clear();
-
-    if (field("comment").toBool()) {                // 一些说明
-        block += "/*\n";
-        block += "    " + implementation.toLatin1() + "\n";
-        block += "*/\n";
-        block += "\n";
-    }
-    block += "#include \"" + header.toLatin1() + "\"\n";
-    block += "\n";
-
-    if (field("qobjectCtor").toBool()) {             // QObject风格的构造器
-        block += className + "::" + className + "(QObject *parent)\n";
-        block += "    : " + baseClass + "(parent)\n";
-        block += "{\n";
-        block += "}\n";
-    } else if (field("qwidgetCtor").toBool()) {       // QWidget风格的构造器
-        block += className + "::" + className + "(QWidget *parent)\n";
-        block += "    : " + baseClass + "(parent)\n";
-        block += "{\n";
-        block += "}\n";
-    } else if (field("defaultCtor").toBool()) {        // 默认构造函数
-        block += className + "::" + className + "()\n";
-        block += "{\n";
-        block += "    // missing code\n";
-        block += "}\n";
-
-        if (field("copyCtor").toBool()) {              // 复制构造函数
-            block += "\n";
-            block += className + "::" + className + "(const " + className
-                     + " &other)\n";
-            block += "{\n";
-            block += "    *this = other;\n";
-            block += "}\n";
-            block += "\n";
-            block += className + " &" + className + "::operator=(const "
-                     + className + " &other)\n";
-            block += "{\n";
-            if (!baseClass.isEmpty())
-                block += "    " + baseClass + "::operator=(other);\n";
-            block += "    // missing code\n";
-            block += "    return *this;\n";
-            block += "}\n";
-        }
-    }
-
-    // 执行生成文件
-    QFile implementationFile(outputDir + "/" + implementation);
-    if (!implementationFile.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(0, QObject::tr("Simple Wizard"),
-                             QObject::tr("Cannot write file %1:\n%2")
-                             .arg(implementationFile.fileName())
-                             .arg(implementationFile.errorString()));
-        return;
-    }
-    implementationFile.write(block);
-
-//! [5]
-    QDialog::accept();
-//! [5] //! [6]
 }
-//! [6]
-
-//! [7]
-//!
-//!
-//!
-//void IntroPage::on_sel_sex(const QString &text)
-//{
-//    QString str;
-//    str = "You select " + text;
-////    QMessageBox::information(this, tr("Info"), str);
-//}
 
 void IntroPage::onChanged(int index)
 {
@@ -758,7 +622,41 @@ bool ResultPage::verifyConstraint(int rowIndex)
     case 14:
         return parent_wizard->info.mcon ;
     }
+}
 
+QString findImageString(QString name)
+{
+    QString iconStr;
+    if(name.indexOf("CK-BT21-B")==0){
+        iconStr=(":/images/chiko/CK-BT21-B.jpg");
+    }else if(name.indexOf("CK-BT21-S")==0){
+         iconStr=(":/images/chiko/CK-BT21-S.jpg");
+    }else if(name.indexOf("CK-BT21-")==0){
+         iconStr=(":/images/chiko/CK-BT21-.jpg");
+    }else if(name.indexOf("CK-BT23-")==0){
+         iconStr=(":/images/chiko/CK-BT23-.gif");
+    }else if(name.indexOf("CK-BT31-B")==0){
+         iconStr=(":/images/chiko/CK-BT31-B.jpg");
+    }else if(name.indexOf("CK-BT31-S")==0){
+         iconStr=(":/images/chiko/CK-BT31-S.jpg");
+    }else if(name.indexOf("CK-BT31-")==0){
+         iconStr=(":/images/chiko/CK-BT31-.tif");
+    }else if(name.indexOf("CK-BT33-")==0){
+         iconStr=(":/images/chiko/CK-BT33-.gif");
+    }else if(name.indexOf("CK-BT-BSK")==0){
+         iconStr=(":/images/chiko/CK-BT-BSK.jpg");
+    }else if(name.indexOf("CK-BT-R3500")==0){
+         iconStr=(":/images/chiko/CK-BT-R3500.jpg");
+    }else if(name.indexOf("CK-BT-RSK")==0){
+         iconStr=(":/images/chiko/CK-BT-RSK.jpg");
+    }else if(name.indexOf("CK-FPA-BT1000")==0){
+         iconStr=(":/images/chiko/CK-FPA-BT1000.jpg");
+    }else if(name.indexOf("CK-FZE")==0){
+         iconStr=(":/images/chiko/CK-FTE-F.jpg");
+    }else if(name.indexOf("CK-FZM")==0){
+         iconStr=(":/images/chiko/CK-FTM-F.jpg");
+    }
+    return iconStr;
 }
 
 void ResultPage::initializePage()
@@ -831,40 +729,17 @@ void ResultPage::initializePage()
                 float length = parent_wizard->info.mspace + 120 * 2;
                 desc = desc.replace(QRegExp("\\d+"),  QString::number(length));
             }
-            QString iconStr;
-            if(name.indexOf("CK-BT21-B")==0){
-                iconStr=(":/images/chiko/CK-BT21-B.jpg");
-            }else if(name.indexOf("CK-BT21-S")==0){
-                 iconStr=(":/images/chiko/CK-BT21-S.jpg");
-            }else if(name.indexOf("CK-BT21-")==0){
-                 iconStr=(":/images/chiko/CK-BT21-.jpg");
-            }else if(name.indexOf("CK-BT23-")==0){
-                 iconStr=(":/images/chiko/CK-BT23-.gif");
-            }else if(name.indexOf("CK-BT31-B")==0){
-                 iconStr=(":/images/chiko/CK-BT31-B.jpg");
-            }else if(name.indexOf("CK-BT31-S")==0){
-                 iconStr=(":/images/chiko/CK-BT31-S.jpg");
-            }else if(name.indexOf("CK-BT31-")==0){
-                 iconStr=(":/images/chiko/CK-BT31-.tif");
-            }else if(name.indexOf("CK-BT33-")==0){
-                 iconStr=(":/images/chiko/CK-BT33-.gif");
-            }else if(name.indexOf("CK-BT-BSK")==0){
-                 iconStr=(":/images/chiko/CK-BT-BSK.jpg");
-            }else if(name.indexOf("CK-BT-R3500")==0){
-                 iconStr=(":/images/chiko/CK-BT-R3500.jpg");
-            }else if(name.indexOf("CK-BT-RSK")==0){
-                 iconStr=(":/images/chiko/CK-BT-RSK.jpg");
-            }else if(name.indexOf("CK-FPA-BT1000")==0){
-                 iconStr=(":/images/chiko/CK-FPA-BT1000.jpg");
-            }else if(name.indexOf("CK-FTE-F")==0){
-                 iconStr=(":/images/chiko/CK-FTE-F.jpg");
-            }else if(name.indexOf("CK-FTM-F")==0){
-                 iconStr=(":/images/chiko/CK-FTM-F.jpg");
-            }
+            QString iconStr = findImageString(name);
+            QPixmap pix(iconStr);
+            QPixmap resPix = pix.scaled(27,27, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            QLabel *lblTest = new QLabel;
+            lblTest->setPixmap(resPix);
+            lblTest->setAlignment(Qt::AlignCenter);
 
             tableWidget->setItem(rowNum,0,new QTableWidgetItem(name));
             tableWidget->setItem(rowNum,1,new QTableWidgetItem(desc));
-            tableWidget->setItem(rowNum,2,new QTableWidgetItem(QIcon(QPixmap(iconStr)), ""));
+//            tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
+            tableWidget->setCellWidget(rowNum,2,lblTest);
             tableWidget->setItem(rowNum,3,new QTableWidgetItem("sets"));
             tableWidget->setItem(rowNum,4,new QTableWidgetItem(QString::number(result)));
             rowNum ++;
@@ -874,62 +749,8 @@ void ResultPage::initializePage()
     tableWidget->setRowCount(rowNum);
     tableWidget->resizeColumnToContents(0);
     tableWidget->resizeColumnToContents(1);
-    /*
-       tableWidget->resizeColumnsToContents();
-    xlsx.write("A1", v);
-    xlsx.saveAs("Test.xlsx");*/
 
-//    commentCheckBox = new QCheckBox(tr("&Start generated files with a "
-////! [14]
-//                                       "comment"));
-//    commentCheckBox->setChecked(true);    // 初始化为勾上
-
-//    protectCheckBox = new QCheckBox(tr("&Protect header file against multiple "
-//                                       "inclusions"));
-//    protectCheckBox->setChecked(true);   // 初始化为勾上
-
-//    macroNameLabel = new QLabel(tr("&Macro name:"));  // label和lineEdit
-//    macroNameLineEdit = new QLineEdit;
-//    macroNameLabel->setBuddy(macroNameLineEdit);
-
-//    // 跟上一页的基类关联
-//    includeBaseCheckBox = new QCheckBox(tr("&Include base class definition"));
-//    baseIncludeLabel = new QLabel(tr("Base class include:"));
-//    baseIncludeLineEdit = new QLineEdit;
-//    baseIncludeLabel->setBuddy(baseIncludeLineEdit);
-
-//    // protectCheckBox和它下方的macroNameLabel,macroNameLineEdit保持同步
-//    connect(protectCheckBox, SIGNAL(toggled(bool)),
-//            macroNameLabel, SLOT(setEnabled(bool)));
-//    connect(protectCheckBox, SIGNAL(toggled(bool)),
-//            macroNameLineEdit, SLOT(setEnabled(bool)));
-//    // includeBaseCheckBox和它右边的baseIncludeLabel,baseIncludeLineEdit保持同步
-//    connect(includeBaseCheckBox, SIGNAL(toggled(bool)),
-//            baseIncludeLabel, SLOT(setEnabled(bool)));
-//    connect(includeBaseCheckBox, SIGNAL(toggled(bool)),
-//            baseIncludeLineEdit, SLOT(setEnabled(bool)));
-
-//    // 注册域
-//    registerField("comment", commentCheckBox);
-//    registerField("protect", protectCheckBox);
-//    registerField("macroName", macroNameLineEdit);
-//    registerField("includeBase", includeBaseCheckBox);
-//    registerField("baseInclude", baseIncludeLineEdit);
-
-//    QGridLayout *layout = new QGridLayout;   // 布局
-//    layout->setColumnMinimumWidth(0, 20);    // 设置第一列的最小宽20像素
-//    layout->addWidget(commentCheckBox, 0, 0, 1, 3);
-//    layout->addWidget(protectCheckBox, 1, 0, 1, 3);
-//    layout->addWidget(macroNameLabel, 2, 1);
-//    layout->addWidget(macroNameLineEdit, 2, 2);
-//    layout->addWidget(includeBaseCheckBox, 3, 0, 1, 3);
-//    layout->addWidget(baseIncludeLabel, 4, 1);
-//    layout->addWidget(baseIncludeLineEdit, 4, 2);
-////! [15]
-//    setLayout(layout);
 }
-
-// 上一页类信息的基类和宏影响这一页，上一页点NEXT时触发本槽
 
 int judgeEGType(int vnum,bool mcon,int orientation)
 {
@@ -960,80 +781,6 @@ int judgeEGType(int vnum,bool mcon,int orientation)
     }
 }
 
-void caculateResult(int egType)
-{
-//    switch (egType){
-//    case:1
-//     case:2
-//     case:3
-//     case:4
-//     case:5
-//     case:6
-//     case:7
-//     case:8
-//     case:9
-//     case:10
-//     case:11
-//     case:12
-// default:
-//     break;
-
-//    }
-
-}
-
-void excelTest(){
-
-    QXlsx::Document xlsx("rule.xlsx");
-
-    QVariant v = xlsx.read(5,5);
-    xlsx.write("A1", v);
-    xlsx.saveAs("Test.xlsx");
-//    xlsx.read()
-//    QAxObject excel("");
-
-//    excel.setProperty("Visible", true);
-//    QAxObject *work_books = excel.querySubObject("WorkBooks");
-//    work_books->dynamicCall("Open (const QString&)", QString("rule.xlsx"));
-
-//    QVariant title_value = excel.property("Caption");  //获取标题
-//    qDebug()<<QString("excel title : ")<<title_value;
-//    QAxObject *work_book = excel.querySubObject("ActiveWorkBook");
-//    QAxObject *work_sheets = work_book->querySubObject("Sheets");  //Sheets也可换用WorkSheets
-
-
-//    int sheet_count = work_sheets->property("Count").toInt();  //获取工作表数目
-//    qDebug()<<QString("sheet count : ")<<sheet_count;
-//    for(int i=1; i<=sheet_count; i++)
-//    {
-//    QAxObject *work_sheet = work_book->querySubObject("Sheets(int)", i);  //Sheets(int)也可换用Worksheets(int)
-//    QString work_sheet_name = work_sheet->property("Name").toString();  //获取工作表名称
-//    QString message = QString("sheet ")+QString::number(i, 10)+ QString(" name");
-//    qDebug()<<message<<work_sheet_name;
-//    }
-//    if(sheet_count > 0)
-//    {
-//    QAxObject *work_sheet = work_book->querySubObject("Sheets(int)", 1);
-//    QAxObject *used_range = work_sheet->querySubObject("UsedRange");
-//    QAxObject *rows = used_range->querySubObject("Rows");
-//    QAxObject *columns = used_range->querySubObject("Columns");
-//    int row_start = used_range->property("Row").toInt();  //获取起始行
-//    int column_start = used_range->property("Column").toInt();  //获取起始列
-//    int row_count = rows->property("Count").toInt();  //获取行数
-//    int column_count = columns->property("Count").toInt();  //获取列数
-//    for(int i=row_start; i < row_count ; i++)
-//    {
-//    for(int j=column_start; j < column_count ; j++)
-//    {
-//    QAxObject *cell = work_sheet->querySubObject("Cells(int,int)", i, j);
-//    QVariant cell_value = cell->property("Value");  //获取单元格内容
-//    QString message = QString("row-")+QString::number(i, 10)+QString("-column-")+QString::number(j, 10)+QString(":");
-//    qDebug()<<message<<cell_value;
-//    }
-//    }
-//    }
-
-}
 int componentNumber(int rowIndex,int columnIndex,int N,int M,int V,float L)
 {
     int result;

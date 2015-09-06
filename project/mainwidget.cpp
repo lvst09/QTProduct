@@ -28,14 +28,11 @@ mainWidget::mainWidget(QWidget *parent):QMainWindow(parent){
 //    QTextEdit *edit3=new QTextEdit(this);
 //    window3->setCentralWidget(edit3);
 
-//    ClassWizard wizard(window3);
+//  ClassWizard wizard(window3);
     QWidget * widget = new QWidget();
-//    InfoPage * page = new InfoPage;
+//  InfoPage * page = new InfoPage;
     ClassWizard * wizard = new ClassWizard(widget);
-//    widget->resize(100,200);
-
-
-
+//  widget->resize(100,200);
     wizard->resize(1000,800);
 
     window3->setCentralWidget(widget);

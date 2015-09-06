@@ -1037,7 +1037,11 @@ bool Worksheet::insertImage(int row, int column, const QImage &image)
         12,700 EMUs per point. Therefore, 12,700 * 3 /4 = 9,525 EMUs per
         pixel
     */
-    anchor->from = XlsxMarker(row, column, 0, 0);
+    if(column==0){
+        anchor->from = XlsxMarker(row, column, 0,0);
+    }else{
+        anchor->from = XlsxMarker(row, column, 9525 * 5,9525 * 10);
+    }
     anchor->ext = QSize(image.width() * 9525, image.height() * 9525);
 
     anchor->setObjectPicture(image);
