@@ -57,7 +57,7 @@ MainWindow::MainWindow()
     mdiArea = new QMdiArea;
     mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    setCentralWidget(mdiArea);
+//    setCentralWidget(mdiArea);
     connect(mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
             this, SLOT(updateMenus()));
     windowMapper = new QSignalMapper(this);
@@ -67,7 +67,7 @@ MainWindow::MainWindow()
     createActions();
     createMenus();
 //    createToolBars();
-    createStatusBar();
+//    createStatusBar();
     updateMenus();
 
     readSettings();
@@ -77,12 +77,22 @@ MainWindow::MainWindow()
     Qt::WindowFlags flags = 0;
     flags |= Qt::WindowMinimizeButtonHint;
     flags |= Qt::WindowCloseButtonHint;
-//    flags |= Qt::MSWindowsFixedSizeDialogHint;
+    flags |= Qt::MSWindowsFixedSizeDialogHint;
 
+    chikoLogin = new login(this);
+    setCentralWidget(chikoLogin);
     this->setWindowFlags(flags);
 
     this->resize(1000,600);
+    this->setMinimumSize(1000,600);
+    this->setMaximumSize(1000,600);
     this->newFile();
+}
+
+void MainWindow::loginButtonClicked()
+{
+
+    setCentralWidget(mdiArea);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

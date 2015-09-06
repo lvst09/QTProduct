@@ -42,7 +42,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <login.h>
 class MdiChild;
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -64,7 +64,7 @@ public:
 //    explicit MainWindow(QWidget *parent = 0);
 
     bool openFile(const QString &fileName);
-
+    void loginButtonClicked();
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
 
@@ -86,6 +86,7 @@ private slots:
     void setActiveSubWindow(QWidget *window);
 
 private:
+
     void createActions();
     void createMenus();
     void createToolBars();
@@ -97,6 +98,7 @@ private:
 
     QString curFile;
 
+    login * chikoLogin;
     QMdiArea *mdiArea;
     QSignalMapper *windowMapper;
     Ui::MainWindow *ui;

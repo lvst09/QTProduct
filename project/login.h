@@ -12,7 +12,7 @@ public:
 signals:
 
 public slots:
-
+    void loginButtonClicked();
 };
 
 #endif // LOGIN_H

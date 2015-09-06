@@ -39,8 +39,8 @@ mainWidget::mainWidget(QWidget *parent):QMainWindow(parent){
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(widget);
-//    QHBoxLayout *mainLayout=new QHBoxLayout;
-//    mainLayout->addLayout(layout);
+//  QHBoxLayout *mainLayout= new QHBoxLayout;
+//  mainLayout->addLayout(layout);
     window3->setLayout(layout);
 
     wizard->show();
