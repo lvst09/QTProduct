@@ -27,7 +27,7 @@ QTXLSX_USE_NAMESPACE
 ClassWizard::ClassWizard(QWidget *parent)
     : QWizard(parent)
 {
-    addPage(new IntroPage(this));        // 添加定义的五个页面
+//    addPage(new IntroPage(this));        // 添加定义的五个页面
     addPage(new InfoPage(this));
     addPage(new ResultPage(this));
 //    addPage(new OutputFilesPage(this));
@@ -35,9 +35,7 @@ ClassWizard::ClassWizard(QWidget *parent)
 //! [0]
     setOption(QWizard::NoCancelButton);
 
-    setWizardStyle(ModernStyle); // 如果你用的是win7或vista默认的风格是AeroStyle
-    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/banner.png"));
-    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/background.png"));
+//    setWizardStyle(ModernStyle); // 如果你用的是win7或vista默认的风格是AeroStyle
 
     setWindowTitle(tr("Class Wizard"));
 
@@ -48,8 +46,22 @@ ClassWizard::ClassWizard(QWidget *parent)
     parent->setLayout(layout);
     setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);hide();
 
+    setWizardStyle(ModernStyle); // win7vistaAeroStyle
+//    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/chiko/background.jpg"));
+    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/background.jpg"));
+
+
+//    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
+//    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/background.png"));
+
+//    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/background.png"));
+
+//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/background.png"));
+
+//    setPixmap(QWizard::NPixmaps, QPixmap(":/images/background.png"));
+
     this->setGeometry(0,0,1000,800);
-//    this->resize(766,341);
+
    //! [2]
 }
 //! [1] //! [2]
@@ -388,10 +400,20 @@ InfoPage::InfoPage(QWidget *parent)
 {
     parent_wizard = (ClassWizard *) parent;
     // 标题和子标题
-    setTitle(tr("Array Information"));
-    setSubTitle(tr("Basic Information "
-                   "of your project to generate all components list for your reference."));
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo1.png")); // Logo
+
+    setStyleSheet("background-image: url(./images/chiko/background.jpg)");
+
+//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/background.jpg"));
+
+//    this->setAutoFillBackground(true);
+//    QPalette palette;
+//    QPixmap pixmap(":/images/chiko/background.jpg");
+//    palette.setBrush(QPalette::Window, QBrush(pixmap));
+//    this->setPalette(palette);
+
+//    setTitle(tr("Array Information"));
+//    setSubTitle(tr("Basic Information "
+//                   "of your project to generate all components list for your reference."));
 
     QGridLayout *layout = new QGridLayout;        // InfoPage的布局
 
@@ -438,7 +460,6 @@ InfoPage::InfoPage(QWidget *parent)
     cbo_vnum->addItem(QWidget::tr("1 panel landscape"));
     cbo_vnum->addItem(QWidget::tr("2 panels landscape"));
     cbo_vnum->addItem(QWidget::tr("1 panel portrait"));
-
 
     QLabel * label_hnum = new QLabel(tr("Horizontal QTY"));
     edt_hnum = new QLineEdit();
@@ -541,11 +562,20 @@ InfoPage::InfoPage(QWidget *parent)
 
     setLayout(layout);
 
+
+
+//  setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
+//    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
+//    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/background.png"));
+
+//    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/background.png"));
+//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/background.png"));
+//    setPixmap(QWizard::NPixmaps, QPixmap(":/images/background.png"));
+
+
     this->resize(766,341);
 }
 
-
-//! [14]
 bool InfoPage::validatePage()
 {
     parent_wizard->info.size_length = field("edt_size_length").toFloat();//L
@@ -682,7 +712,7 @@ void ResultPage::initializePage()
     int rowNum = 0;
 
     QXlsx::Document xlsx("rule.xlsx");
-    xlsx.saveAs("rule_test.xlsx");
+
     tableWidget->clear();
     QStringList header;
     header<<"Item no"<<"Description"<<"Image"<<"Unit"<<"Qty";
@@ -884,6 +914,10 @@ ResultPage::ResultPage(QWidget *parent)
 //! [15]
     setLayout(layout);
     setButtonText(QWizard::NextButton, "Save >");
+
+//    setStyleSheet("background-color:#181818");
+//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/login.jpg"));
+//    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/chiko/login.jpg")); // Logo
 
 }
 //! [16]

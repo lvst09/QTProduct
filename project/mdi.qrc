@@ -24,5 +24,6 @@
         <file>images/chiko/head.tif</file>
         <file>images/chiko/tail.tif</file>
         <file>images/chiko/login.jpg</file>
+        <file>images/chiko/background.jpg</file>
     </qresource>
 </RCC>
