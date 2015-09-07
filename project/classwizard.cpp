@@ -41,14 +41,15 @@ ClassWizard::ClassWizard(QWidget *parent)
 
     this->setParent(parent);
 
-    QGridLayout *layout = new QGridLayout;        // InfoPage的布局
-    layout->addWidget(this, 0, 0);
-    parent->setLayout(layout);
+//    QGridLayout *layout = new QGridLayout;        // InfoPage的布局
+//    layout->addWidget(this, 0, 0);
+//    parent->setLayout(layout);
     setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);hide();
 
     setWizardStyle(ModernStyle); // win7vistaAeroStyle
 //    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/chiko/background.jpg"));
-    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/background.jpg"));
+//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/background.jpg"));
+//    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/chiko/background.jpg"));
 
 
 //    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
@@ -554,15 +555,28 @@ InfoPage::InfoPage(QWidget *parent)
     registerField("chk_plastic_cushion", chk_plastic_cushion);
     registerField("chk_pushload_support", chk_pushload_support);
 
+
+    QPixmap pix(":/images/chiko/background.jpg");
+    QPixmap resPix = pix.scaled(1000,800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QLabel *lblTest = new QLabel;
+    lblTest->setGeometry(0,0,1000,800);
+    lblTest->setPixmap(resPix);
+    lblTest->setAlignment(Qt::AlignCenter);
+    lblTest->setParent(this);
+
     layout->addWidget(groupBox_value, 1,0,1,1);
     layout->addWidget(groupBox, 1,1,1,1);
 
     layout->addWidget(groupBox_number, 2,0,1,1);
     layout->addWidget(groupBox_checkbox, 2,1,1,1);
 
-    setLayout(layout);
 
 
+    QWidget * widget = new QWidget();
+    widget->setParent(this);
+    widget->setGeometry(QRect(0, 0, 650, 600));
+
+    widget->setLayout(layout);
 
 //  setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
 //    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));

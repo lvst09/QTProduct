@@ -51,6 +51,7 @@ login::login(QWidget *parent) :
 
 void login::loginButtonClicked()
 {
+//    CHIKO ck59972267
     MainWindow * mainWindow = (MainWindow *)this->parent();
     mainWindow->loginButtonClicked();
 }
