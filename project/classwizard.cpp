@@ -152,6 +152,7 @@ void ClassWizard::save(QString fileName)
 
     str = "Console Angle: " ;
     str += angle;
+    str += " DEG";
     xlsx.write("A4", str);
 
     str = "Need Side Plate: " ;
@@ -160,7 +161,7 @@ void ClassWizard::save(QString fileName)
 
     str = "Solar Panel Power: " ;
     str += QString::number(info.power);
-    str += "W";
+    str += " W";
     xlsx.write("A5", str);
 
     str = "Need Ballast Plate: " ;
@@ -169,10 +170,12 @@ void ClassWizard::save(QString fileName)
 
     str = "Quantity of Panles in Vertical Direction: " ;
     str += info.vnum == 1 ? QString::number(2) : QString::number(1);
+    str += " PCS";
     xlsx.write("A6", str);
 
     str = "Quantity of Panles in Horizontal Direction: " ;
     str +=  QString::number(info.hnum);
+    str += " PCS";
     xlsx.write("A7", str);
 
     str = "Array Quantity: " ;
@@ -185,6 +188,7 @@ void ClassWizard::save(QString fileName)
 
     str = "Distance Between Arrays: " ;
     str += QString::number(info.mspace);
+    str += " MM";
     xlsx.write("A10", str);
 
     str = "Need Rubber pad: " ;
@@ -198,10 +202,12 @@ void ClassWizard::save(QString fileName)
     float totalNum = info.mnum * (info.vnum == 1 ? 2 :1) * info.hnum;
     str = "Solar Panel Total Quantity: " ;
     str += QString::number(totalNum);
+    str += " PCS";
     xlsx.write("E8", str);
 
     str = "Project Power: " ;
     str += QString::number(info.power * totalNum);
+    str += " W";
     xlsx.write("E9", str);
 
     str = "Solar Panel Orientations: " ;
@@ -234,25 +240,29 @@ void ClassWizard::save(QString fileName)
     xlsx.setRowHeight("13",35.1*ratio);
 
     QXlsx::Document formatxlsx("format.xlsx");
-    for(int i = 0 ; i <1; i++)
+
+    for(int j = 0 ; j < 8; j++)
     {
-        for(int j = 0 ; j < 8; j++)
-        {
             char column = 'A' ;
-            column += j;
-            cellString = column + QString::number(i+20);
+            if(j==6)
+                column+= 7;
+            else if(j==7)
+                column+=6;
+            else
+                column += j;
+            cellString = column + QString::number(20);
 
             QVariant v = formatxlsx.read(cellString);
 
-            cellString = column + QString::number(i+13);
+            cellString = column + QString::number(13);
             writeBorderStyleCell(xlsx, cellString, "", Format::BorderThin);
 
-            cellString = column + QString::number(i+12);
+            cellString = column + QString::number(12);
             writeBorderStyleCell(xlsx, cellString, "", Format::BorderThin);
 
             xlsx.write(cellString,v);
-        }
     }
+
 
     for(int i = 0 ; i < resultTable->rowCount(); i++)
     {
@@ -729,7 +739,7 @@ void ResultPage::initializePage()
 
     tableWidget->clear();
     QStringList header;
-    header<<"Item no"<<"Description"<<"Image"<<"Unit"<<"Qty";
+    header<<"Item no"<<"Description"<<"Image"<<"Qty"<<"Unit";
     tableWidget->setHorizontalHeaderLabels(header);
 
     for(int i = 0; i<15; i++)
@@ -784,8 +794,9 @@ void ResultPage::initializePage()
             tableWidget->setItem(rowNum,1,new QTableWidgetItem(desc));
 //            tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
             tableWidget->setCellWidget(rowNum,2,lblTest);
-            tableWidget->setItem(rowNum,3,new QTableWidgetItem("sets"));
-            tableWidget->setItem(rowNum,4,new QTableWidgetItem(QString::number(result)));
+            tableWidget->setItem(rowNum,3,new QTableWidgetItem(QString::number(result)));
+            tableWidget->setItem(rowNum,4,new QTableWidgetItem("sets"));
+
             rowNum ++;
         }
     }

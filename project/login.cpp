@@ -5,6 +5,7 @@
 #include <QBoxLayout>
 #include <qpushbutton.h>
 #include "mainwindow.h"
+#include <QMessageBox>
 login::login(QWidget *parent) :
     QWidget(parent)
 {
@@ -15,8 +16,8 @@ login::login(QWidget *parent) :
     palette.setBrush(QPalette::Window, QBrush(pixmap));
     this->setPalette(palette);
 
-    QLineEdit * edt_name = new QLineEdit();
-    QLineEdit * edt_password = new QLineEdit();
+    edt_name = new QLineEdit();
+    edt_password = new QLineEdit();
     QLineEdit * edt_email = new QLineEdit();
 
 //    edt_size_length->setValidator(new QIntValidator(0, 2000, this));
@@ -52,6 +53,13 @@ login::login(QWidget *parent) :
 void login::loginButtonClicked()
 {
 //    CHIKO ck59972267
-    MainWindow * mainWindow = (MainWindow *)this->parent();
-    mainWindow->loginButtonClicked();
+//    if( edt_name->text().compare("CHIKO")==0 && edt_password->text().compare("ck59972267")==0 )
+    {
+        MainWindow * mainWindow = (MainWindow *)this->parent();
+        mainWindow->loginButtonClicked();
+    }
+//    else{
+//        QMessageBox::warning(0,"Error","user name or password is not right.",QMessageBox::Yes);
+//    }
+
 }
