@@ -97,8 +97,12 @@ public:
 
     bool validatePage ();
     void initializePage();
+public slots: void refreshPreview();
 private:
     ClassWizard * parent_wizard;
+
+    QLabel * previewLabel;
+    QLabel * layoutLabel;
 
     QComboBox * cbo_angle;
     QLineEdit * edt_size_length;
@@ -117,6 +121,8 @@ private:
     QCheckBox * chk_pushload_support;
 
     QComboBox * cbo_orientation;
+
+
 };
 //! [2]
 

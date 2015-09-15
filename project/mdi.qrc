@@ -24,5 +24,17 @@
         <file>images/chiko/tail.tif</file>
         <file>images/chiko/login.jpg</file>
         <file>images/chiko/background.jpg</file>
+        <file>images/chiko/eg1.png</file>
+        <file>images/chiko/eg2.png</file>
+        <file>images/chiko/eg3.png</file>
+        <file>images/chiko/eg4.png</file>
+        <file>images/chiko/eg5.png</file>
+        <file>images/chiko/eg6.png</file>
+        <file>images/chiko/eg7.png</file>
+        <file>images/chiko/eg8.png</file>
+        <file>images/chiko/eg9.png</file>
+        <file>images/chiko/eg10.png</file>
+        <file>images/chiko/eg11.png</file>
+        <file>images/chiko/eg12.png</file>
     </qresource>
 </RCC>

@@ -22,6 +22,7 @@
 #include "xlsxchart.h"
 
 #include "xlsxformat.h"
+#include <QObject>
 QTXLSX_USE_NAMESPACE
 
 ClassWizard::ClassWizard(QWidget *parent)
@@ -397,6 +398,7 @@ IntroPage::IntroPage(QWidget *parent)
     layout->addWidget(cbo_sex, 4, 1);
 
     layout->addWidget(qobjectMacroCheckBox, 6, 0, 1, 2);
+
     setLayout(layout);
 }
 //! [7]
@@ -404,7 +406,7 @@ IntroPage::IntroPage(QWidget *parent)
 //! [8] //! [9]
 void InfoPage::initializePage()
 {
-    ;
+    this->refreshPreview();
 }
 InfoPage::InfoPage(QWidget *parent)
     : QWizardPage(parent)
@@ -532,6 +534,10 @@ InfoPage::InfoPage(QWidget *parent)
     chk_buttom_panel = new QCheckBox(tr("Need ballast plate?"));
     chk_plastic_cushion = new QCheckBox(tr("Need rubber pad?"));
 
+    connect(chk_mcon, SIGNAL(clicked()), this, SLOT(refreshPreview()));
+    connect(cbo_orientation,SIGNAL(currentIndexChanged(int)), this, SLOT(refreshPreview()));
+    connect(cbo_vnum, SIGNAL(currentIndexChanged(int)), this, SLOT(refreshPreview()));
+
     QGroupBox *groupBox_checkbox = new QGroupBox(tr("Ballast I console optional function"));
 
     QVBoxLayout *vbox_checkbox = new QVBoxLayout;
@@ -566,21 +572,27 @@ InfoPage::InfoPage(QWidget *parent)
     registerField("chk_pushload_support", chk_pushload_support);
 
 
-    QPixmap pix(":/images/chiko/background.jpg");
-    QPixmap resPix = pix.scaled(1000,800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    QLabel *lblTest = new QLabel;
-    lblTest->setGeometry(0,0,1000,800);
-    lblTest->setPixmap(resPix);
-    lblTest->setAlignment(Qt::AlignCenter);
-    lblTest->setParent(this);
-
     layout->addWidget(groupBox_value, 1,0,1,1);
     layout->addWidget(groupBox, 1,1,1,1);
 
     layout->addWidget(groupBox_number, 2,0,1,1);
     layout->addWidget(groupBox_checkbox, 2,1,1,1);
 
+    QPixmap pix(":/images/chiko/background.jpg");
+    QPixmap resPix = pix.scaled(1000,800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QLabel *lblTest = new QLabel;
 
+    lblTest->setGeometry(0,0,1000,800);
+    lblTest->setPixmap(resPix);
+
+    lblTest->setAlignment(Qt::AlignCenter);
+    lblTest->setParent(this);
+
+    previewLabel = new QLabel;
+    previewLabel->setGeometry(690,110,280,180);
+
+    previewLabel->setAlignment(Qt::AlignCenter);
+    previewLabel->setParent(this);
 
     QWidget * widget = new QWidget();
     widget->setParent(this);
@@ -588,16 +600,23 @@ InfoPage::InfoPage(QWidget *parent)
 
     widget->setLayout(layout);
 
-//  setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
-//    setPixmap(QWizard::BannerPixmap, QPixmap(":/images/background.png"));
-//    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/background.png"));
-
-//    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/background.png"));
-//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/background.png"));
-//    setPixmap(QWizard::NPixmaps, QPixmap(":/images/background.png"));
-
-
     this->resize(766,341);
+
+}
+
+void InfoPage::refreshPreview()
+{
+
+    if(this->validatePage())
+    {
+        int egType = parent_wizard->info.egType;
+        QString imageName = ":/images/chiko/eg";
+        imageName += QString::number(egType);
+        imageName += ".png";
+        QPixmap pix(imageName);
+        QPixmap resPix = pix.scaled(280,180, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        previewLabel->setPixmap(resPix);
+    }
 }
 
 bool InfoPage::validatePage()
