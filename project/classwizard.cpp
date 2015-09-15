@@ -239,7 +239,7 @@ void ClassWizard::save(QString fileName)
     xlsx.mergeCells("C12:E12", format);
     xlsx.setRowHeight("13",35.1*ratio);
 
-    QXlsx::Document formatxlsx("format.xlsx");
+    QXlsx::Document formatxlsx("format.dat");
 
     for(int j = 0 ; j < 8; j++)
     {
@@ -735,7 +735,7 @@ void ResultPage::initializePage()
     float L = parent_wizard->info.size_length;
     int rowNum = 0;
 
-    QXlsx::Document xlsx("rule.xlsx");
+    QXlsx::Document xlsx("rule.dat");
 
     tableWidget->clear();
     QStringList header;
