@@ -97,12 +97,14 @@ public:
 
     bool validatePage ();
     void initializePage();
+    int layoutImageIndex();
 public slots: void refreshPreview();
+public slots: void refreshLayout();
 private:
     ClassWizard * parent_wizard;
 
     QLabel * previewLabel;
-    QLabel * layoutLabel;
+    QWidget * layoutWidget;
 
     QComboBox * cbo_angle;
     QLineEdit * edt_size_length;
@@ -121,8 +123,12 @@ private:
     QCheckBox * chk_pushload_support;
 
     QComboBox * cbo_orientation;
+    QComboBox * cbo_country;
+    QComboBox * cbo_city;
 
-
+    QLineEdit * edt_building_L;
+    QLineEdit * edt_building_W;
+    QLineEdit * edt_building_H;
 };
 //! [2]
 

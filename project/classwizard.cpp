@@ -407,26 +407,15 @@ IntroPage::IntroPage(QWidget *parent)
 void InfoPage::initializePage()
 {
     this->refreshPreview();
+
 }
+
 InfoPage::InfoPage(QWidget *parent)
     : QWizardPage(parent)
 {
     parent_wizard = (ClassWizard *) parent;
     // 标题和子标题
-
     setStyleSheet("background-image: url(./images/chiko/background.jpg)");
-
-//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/background.jpg"));
-
-//    this->setAutoFillBackground(true);
-//    QPalette palette;
-//    QPixmap pixmap(":/images/chiko/background.jpg");
-//    palette.setBrush(QPalette::Window, QBrush(pixmap));
-//    this->setPalette(palette);
-
-//    setTitle(tr("Array Information"));
-//    setSubTitle(tr("Basic Information "
-//                   "of your project to generate all components list for your reference."));
 
     QGridLayout *layout = new QGridLayout;        // InfoPage的布局
 
@@ -482,6 +471,12 @@ InfoPage::InfoPage(QWidget *parent)
     edt_mnum = new QLineEdit();
     edt_mnum->setValidator(new QIntValidator(0, 1000, this));
     edt_mnum->setText("10");
+
+    QLabel * label_mspace = new QLabel(tr("Spacing between every array mm"));
+    edt_mspace = new QLineEdit();
+    edt_mspace->setValidator(new QIntValidator(0, 1000, this));
+    edt_mspace->setText("10");
+
     QGroupBox *groupBox_number = new QGroupBox(tr("Array info"));
 
     QVBoxLayout *vbox_number = new QVBoxLayout;
@@ -491,6 +486,11 @@ InfoPage::InfoPage(QWidget *parent)
     vbox_number->addWidget(edt_hnum);
     vbox_number->addWidget(label_mnum);
     vbox_number->addWidget(edt_mnum);
+
+    vbox_number->addWidget(label_mspace);
+    vbox_number->addWidget(edt_mspace);
+
+
     vbox_number->addStretch(1);
     groupBox_number->setLayout(vbox_number);
 
@@ -505,24 +505,70 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_angle = new QLabel(tr("Console angle"));
     label_angle->setBuddy(cbo_angle);
 
-    QLabel * label_mspace = new QLabel(tr("Spacing between every array mm"));
-    edt_mspace = new QLineEdit();
-    edt_mspace->setValidator(new QIntValidator(0, 1000, this));
-    edt_mspace->setText("10");
+
     QLabel * label_orientation = new QLabel(tr("Console orientation"));
     cbo_orientation = new QComboBox();
     cbo_orientation->addItem(QWidget::tr("south"));
     cbo_orientation->addItem(QWidget::tr("east/west"));
 
+    QLabel * label_country = new QLabel(tr("Country"));
+    cbo_country = new QComboBox();
+    cbo_country->addItem(QWidget::tr("CHN"));
+    cbo_country->addItem(QWidget::tr("USA"));
+
+    QLabel * label_city = new QLabel(tr("City"));
+    cbo_city = new QComboBox();
+    cbo_city->addItem(QWidget::tr("Shanghai"));
+    cbo_city->addItem(QWidget::tr("Beijing"));
+
+    QGridLayout *vbox_city = new QGridLayout;
+    vbox_city->addWidget(label_country, 1,0,1,1);
+    vbox_city->addWidget(cbo_country, 1,1,1,1);
+    vbox_city->addWidget(label_city, 1,2,1,1);
+    vbox_city->addWidget(cbo_city, 1,3,1,1);
+
+    QLabel * label_building_L = new QLabel(tr("Building L"));
+    edt_building_L = new QLineEdit();
+    edt_building_L->setValidator(new QIntValidator(0, 1000, this));
+    edt_building_L->setText("10");
+    QLabel * label_building_W = new QLabel(tr("W"));
+    edt_building_W = new QLineEdit();
+    edt_building_W->setValidator(new QIntValidator(0, 1000, this));
+    edt_building_W->setText("10");
+    QLabel * label_building_H = new QLabel(tr("H"));
+    edt_building_H = new QLineEdit();
+    edt_building_H->setValidator(new QIntValidator(0, 1000, this));
+    edt_building_H->setText("10");
+    QLabel * label_building_MM = new QLabel(tr("mm"));
+
+    QGridLayout *vbox_building = new QGridLayout;
+    vbox_building->addWidget(label_building_L, 1,0,1,1);
+    vbox_building->addWidget(edt_building_L, 1,1,1,1);
+    vbox_building->addWidget(label_building_W, 1,2,1,1);
+    vbox_building->addWidget(edt_building_W, 1,3,1,1);
+    vbox_building->addWidget(label_building_H, 1,4,1,1);
+    vbox_building->addWidget(edt_building_H, 1,5,1,1);
+    vbox_building->addWidget(label_building_MM, 1,6,1,1);
+
+    QWidget * widget_city = new QWidget();
+    widget_city->setParent(this);
+    widget_city->setGeometry(QRect(0, 0, 650, 50));
+    widget_city->setLayout(vbox_city);
+
+    QWidget * widget_building = new QWidget();
+    widget_building->setParent(this);
+    widget_building->setGeometry(QRect(0, 0, 650, 50));
+    widget_building->setLayout(vbox_building);
+
     QGroupBox *groupBox_value = new QGroupBox(tr("Ballast I Console info"));
 
     QVBoxLayout *vbox_value = new QVBoxLayout;
+    vbox_value->addWidget(widget_city);
+    vbox_value->addWidget(widget_building);
     vbox_value->addWidget(label_orientation);
     vbox_value->addWidget(cbo_orientation);
     vbox_value->addWidget(label_angle);
     vbox_value->addWidget(cbo_angle);
-    vbox_value->addWidget(label_mspace);
-    vbox_value->addWidget(edt_mspace);
 
     vbox_value->addStretch(1);
     groupBox_value->setLayout(vbox_value);
@@ -530,9 +576,15 @@ InfoPage::InfoPage(QWidget *parent)
     chk_mcon = new QCheckBox(tr("All array connected?"));
     chk_back_panel = new QCheckBox(tr("Need back wind plate?"));
     chk_side_panel = new QCheckBox(tr("Need side wind plate?"));
-    chk_pushload_support = new QCheckBox(tr("Need ballast support rails?"));
+    chk_pushload_support = new QCheckBox(tr("Ballast support rails?"));
     chk_buttom_panel = new QCheckBox(tr("Need ballast plate?"));
     chk_plastic_cushion = new QCheckBox(tr("Need rubber pad?"));
+
+    chk_mcon->toggle();
+    chk_pushload_support->toggle();
+
+    chk_back_panel->setChecked(true);
+    chk_side_panel->setChecked(true);
 
     connect(chk_mcon, SIGNAL(clicked()), this, SLOT(refreshPreview()));
     connect(cbo_orientation,SIGNAL(currentIndexChanged(int)), this, SLOT(refreshPreview()));
@@ -542,8 +594,8 @@ InfoPage::InfoPage(QWidget *parent)
 
     QVBoxLayout *vbox_checkbox = new QVBoxLayout;
     vbox_checkbox->addWidget(chk_mcon);
-    vbox_checkbox->addWidget(chk_back_panel);
-    vbox_checkbox->addWidget(chk_side_panel);
+//    vbox_checkbox->addWidget(chk_back_panel);
+//    vbox_checkbox->addWidget(chk_side_panel);
     vbox_checkbox->addWidget(chk_pushload_support);
     vbox_checkbox->addWidget(chk_buttom_panel);
     vbox_checkbox->addWidget(chk_plastic_cushion);
@@ -571,7 +623,6 @@ InfoPage::InfoPage(QWidget *parent)
     registerField("chk_plastic_cushion", chk_plastic_cushion);
     registerField("chk_pushload_support", chk_pushload_support);
 
-
     layout->addWidget(groupBox_value, 1,0,1,1);
     layout->addWidget(groupBox, 1,1,1,1);
 
@@ -579,34 +630,80 @@ InfoPage::InfoPage(QWidget *parent)
     layout->addWidget(groupBox_checkbox, 2,1,1,1);
 
     QPixmap pix(":/images/chiko/background.jpg");
-    QPixmap resPix = pix.scaled(1000,800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QPixmap resPix = pix.scaled(1000,600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     QLabel *lblTest = new QLabel;
 
-    lblTest->setGeometry(0,0,1000,800);
+    lblTest->setGeometry(0,0,1000,600);
     lblTest->setPixmap(resPix);
 
     lblTest->setAlignment(Qt::AlignCenter);
     lblTest->setParent(this);
 
     previewLabel = new QLabel;
-    previewLabel->setGeometry(690,110,280,180);
+    previewLabel->setGeometry(690,60,280,180);
 
     previewLabel->setAlignment(Qt::AlignCenter);
     previewLabel->setParent(this);
 
+//    layoutWidget = new QWidget();
+//    layoutWidget->setParent(this);
+//    layoutWidget->setGeometry(QRect(650, 240, 350, 300));
+
     QWidget * widget = new QWidget();
     widget->setParent(this);
-    widget->setGeometry(QRect(0, 0, 650, 600));
+    widget->setGeometry(QRect(0, 50, 650, 500));
 
     widget->setLayout(layout);
 
     this->resize(766,341);
+}
+void InfoPage::refreshLayout()
+{
+    int layoutType = this->layoutImageIndex();
+    QString layoutImageName = ":/images/chiko/layout";
+    layoutImageName += QString::number(layoutType);
+    layoutImageName += ".png";
+//    QMessageBox::warning(0,"PATH",layoutImageName,QMessageBox::Yes);
+    QPixmap pix(layoutImageName);
+    QPixmap resPix = pix.scaled(31,20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    QPixmap linepix(":/images/chiko/line.png");
+    QPixmap lineResPix = linepix.scaled(15,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    QGridLayout *vbox_layout = new QGridLayout;
+
+    for(int i = 0 ; i< 7 ; i++)
+    {
+        for(int j = 0 ; j< 10 ; j+=2)
+        {
+
+            QLabel * label = new QLabel();
+            label->setPixmap(resPix);
+            label->setGeometry(0,0,31,20);
+            vbox_layout->addWidget(label, i,j,1,1);
+
+            if(j==8)
+                break;
+            label = new QLabel();
+            label->setPixmap(lineResPix);
+            label->setGeometry(0,0,10,1);
+            vbox_layout->addWidget(label, i,j+1,1,1,Qt::AlignBottom);
+
+        }
+    }
+//    vbox_layout->removeWidget();
+
+
+    layoutWidget = new QWidget();
+    layoutWidget->setParent(this);
+    layoutWidget->setGeometry(QRect(650, 240, 350, 300));
+    layoutWidget->setLayout(NULL);
+    layoutWidget->setLayout(vbox_layout);
 
 }
 
 void InfoPage::refreshPreview()
 {
-
     if(this->validatePage())
     {
         int egType = parent_wizard->info.egType;
@@ -616,7 +713,26 @@ void InfoPage::refreshPreview()
         QPixmap pix(imageName);
         QPixmap resPix = pix.scaled(280,180, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         previewLabel->setPixmap(resPix);
+
+        this->refreshLayout();
     }
+}
+
+int InfoPage::layoutImageIndex()
+{
+    Information info = parent_wizard->info;
+    if(info.vnum == 0 && info.orientation == 0 )
+        return 1;
+    else if(info.vnum == 0 && info.orientation == 1 )
+        return 3;
+    else if(info.vnum == 1 && info.orientation == 0 )
+        return 2;
+    else if(info.vnum == 1 && info.orientation == 1 )
+        return 4;
+    else if(info.vnum == 2 && info.orientation == 0 )
+        return 3;
+    else if(info.vnum == 2 && info.orientation == 1 )
+        return 4;
 }
 
 bool InfoPage::validatePage()
@@ -635,7 +751,7 @@ bool InfoPage::validatePage()
     parent_wizard->info.orientation = field("cbo_orientation").toInt();
 
     parent_wizard->info.mcon = field("chk_mcon").toBool();
-   parent_wizard-> info.back_panel = field("chk_back_panel").toBool();
+    parent_wizard->info.back_panel = field("chk_back_panel").toBool();
     parent_wizard->info.side_panel = field("chk_side_panel").toBool();
     parent_wizard->info.buttom_panel = field("chk_buttom_panel").toBool();
     parent_wizard->info.plastic_cushion = field("chk_plastic_cushion").toBool();

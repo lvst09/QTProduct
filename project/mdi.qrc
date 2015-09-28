@@ -36,5 +36,10 @@
         <file>images/chiko/eg10.png</file>
         <file>images/chiko/eg11.png</file>
         <file>images/chiko/eg12.png</file>
+        <file>images/chiko/layout1.png</file>
+        <file>images/chiko/layout2.png</file>
+        <file>images/chiko/layout3.png</file>
+        <file>images/chiko/layout4.png</file>
+        <file>images/chiko/line.png</file>
     </qresource>
 </RCC>
