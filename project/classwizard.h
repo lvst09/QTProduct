@@ -111,6 +111,7 @@ private:
     QLineEdit * edt_size_width;
     QLineEdit * edt_size_height;
     QLineEdit * edt_power;
+    QLineEdit * edt_weight;
     QComboBox * cbo_vnum;
     QLineEdit * edt_hnum;
     QLineEdit * edt_mnum;

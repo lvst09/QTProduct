@@ -275,7 +275,7 @@ void ClassWizard::save(QString fileName)
         xlsx.mergeCells(cellString, format);
 
         cellString = "A" +QString::number(i+13)  ;
-//        xlsx.setRowHeight(cellString,43.1*ratio);
+//      xlsx.setRowHeight(cellString,43.1*ratio);
         writeBorderStyleCell(xlsx, cellString, "", Format::BorderThin);
 
         xlsx.write(cellString,QString::number(i+1));
@@ -315,7 +315,7 @@ void ClassWizard::save(QString fileName)
             }
         }
 
-//      cellString = "A" +QString::number(i+13)  ;
+//      cellString = "A" +QString::number(i+13);
         xlsx.setRowHeight(i+13,43.1*ratio);
     }
 
@@ -439,22 +439,71 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_height = new QLabel(QWidget::tr("Thickness mm"));
     label_height->setBuddy(edt_size_height);
 
-    QLabel * label_power = new QLabel(tr("power"));
+
+    QGridLayout *vbox_length = new QGridLayout;
+    vbox_length->addWidget(label_length, 1,0,1,1);
+    vbox_length->addWidget(edt_size_length, 1,1,1,1);
+
+    QWidget * widget_length = new QWidget();
+    widget_length->setParent(this);
+    widget_length->setGeometry(QRect(0, 0, 650, 100));
+    widget_length->setLayout(vbox_length);
+
+    QGridLayout *vbox_width = new QGridLayout;
+    vbox_width->addWidget(label_width, 1,0,1,1);
+    vbox_width->addWidget(edt_size_width, 1,1,1,1);
+
+    QWidget * widget_width = new QWidget();
+    widget_width->setParent(this);
+    widget_width->setGeometry(QRect(0, 0, 650, 100));
+    widget_width->setLayout(vbox_width);
+
+    QGridLayout *vbox_height = new QGridLayout;
+    vbox_height->addWidget(label_height, 1,0,1,1);
+    vbox_height->addWidget(edt_size_height, 1,1,1,1);
+
+    QWidget * widget_height = new QWidget();
+    widget_height->setParent(this);
+    widget_height->setGeometry(QRect(0, 0, 650, 100));
+    widget_height->setLayout(vbox_height);
+
+
+    QLabel * label_power = new QLabel(tr("Power W"));
     edt_power = new QLineEdit();
     edt_power->setValidator(new QIntValidator(0, 1000, this));
     edt_power->setText("10");
-    QGroupBox *groupBox = new QGroupBox(tr("Panel info"));
 
+    QLabel * label_weight = new QLabel(tr("Weight KG"));
+    edt_weight = new QLineEdit();
+    edt_weight->setValidator(new QIntValidator(0, 1000, this));
+    edt_weight->setText("10");
+
+    QGridLayout *vbox_weight = new QGridLayout;
+    vbox_weight->addWidget(label_power, 1,0,1,1);
+    vbox_weight->addWidget(edt_power, 1,1,1,1);
+    vbox_weight->addWidget(label_weight, 1,2,1,1);
+    vbox_weight->addWidget(edt_weight, 1,3,1,1);
+
+    QWidget * widget_weight = new QWidget();
+    widget_weight->setParent(this);
+    widget_weight->setGeometry(QRect(0, 0, 650, 100));
+    widget_weight->setLayout(vbox_weight);
+
+    QGroupBox *groupBox = new QGroupBox(tr("Panel info"));
     QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(label_length);
-    vbox->addWidget(edt_size_length);
-    vbox->addWidget(label_width);
-    vbox->addWidget(edt_size_width);
-    vbox->addWidget(label_height);
-    vbox->addWidget(edt_size_height);
-    vbox->addWidget(label_power);
-    vbox->addWidget(edt_power);
-    vbox->addStretch(1);
+//    vbox->addWidget(label_length);
+//    vbox->addWidget(edt_size_length);
+//    vbox->addWidget(label_width);
+//    vbox->addWidget(edt_size_width);
+//    vbox->addWidget(label_height);
+//    vbox->addWidget(edt_size_height);
+    vbox->addWidget(widget_length);
+    vbox->addWidget(widget_width);
+    vbox->addWidget(widget_height);
+
+    vbox->addWidget(widget_weight);
+//    vbox->addWidget(edt_power);
+//    vbox->addStretch(1);
     groupBox->setLayout(vbox);
 
     QLabel * label_vnum = new QLabel(tr("Vertical QTY"));
@@ -486,10 +535,8 @@ InfoPage::InfoPage(QWidget *parent)
     vbox_number->addWidget(edt_hnum);
     vbox_number->addWidget(label_mnum);
     vbox_number->addWidget(edt_mnum);
-
     vbox_number->addWidget(label_mspace);
     vbox_number->addWidget(edt_mspace);
-
 
     vbox_number->addStretch(1);
     groupBox_number->setLayout(vbox_number);
@@ -641,65 +688,70 @@ InfoPage::InfoPage(QWidget *parent)
 
     previewLabel = new QLabel;
     previewLabel->setGeometry(690,60,280,180);
-
     previewLabel->setAlignment(Qt::AlignCenter);
     previewLabel->setParent(this);
 
 //    layoutWidget = new QWidget();
 //    layoutWidget->setParent(this);
 //    layoutWidget->setGeometry(QRect(650, 240, 350, 300));
-
+    layoutWidget = Q_NULLPTR;
     QWidget * widget = new QWidget();
     widget->setParent(this);
     widget->setGeometry(QRect(0, 50, 650, 500));
 
     widget->setLayout(layout);
-
     this->resize(766,341);
 }
+
 void InfoPage::refreshLayout()
 {
+    if(layoutWidget!= Q_NULLPTR)
+    {
+        delete layoutWidget;
+        layoutWidget = Q_NULLPTR;
+    }
+
+    layoutWidget = new QWidget(this);
+
     int layoutType = this->layoutImageIndex();
+
     QString layoutImageName = ":/images/chiko/layout";
     layoutImageName += QString::number(layoutType);
     layoutImageName += ".png";
-//    QMessageBox::warning(0,"PATH",layoutImageName,QMessageBox::Yes);
+
     QPixmap pix(layoutImageName);
     QPixmap resPix = pix.scaled(31,20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     QPixmap linepix(":/images/chiko/line.png");
     QPixmap lineResPix = linepix.scaled(15,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    QGridLayout *vbox_layout = new QGridLayout;
+//    QGridLayout *vbox_layout = new QGridLayout;
 
     for(int i = 0 ; i< 7 ; i++)
     {
-        for(int j = 0 ; j< 10 ; j+=2)
+        for(int j = 0 ; j< 13 ; j+=1)
         {
-
-            QLabel * label = new QLabel();
+            QLabel * label = new QLabel(layoutWidget);
             label->setPixmap(resPix);
-            label->setGeometry(0,0,31,20);
-            vbox_layout->addWidget(label, i,j,1,1);
+            label->setGeometry(i* (31 + 15),j * 20,31,20);
+//            vbox_layout->addWidget(label, i,j,1,1);
 
-            if(j==8)
-                break;
-            label = new QLabel();
-            label->setPixmap(lineResPix);
-            label->setGeometry(0,0,10,1);
-            vbox_layout->addWidget(label, i,j+1,1,1,Qt::AlignBottom);
+            if(i==6)
+                continue;
+            if(this->parent_wizard->info.mcon)
+            {
+                label = new QLabel(layoutWidget);
+                label->setPixmap(lineResPix);
+                label->setGeometry(i* (31 + 15)+31,j * 20 + 19,15,1);
+            }
 
+//            vbox_layout->addWidget(label, i,j+1,1,1,Qt::AlignBottom);
         }
     }
-//    vbox_layout->removeWidget();
 
-
-    layoutWidget = new QWidget();
-    layoutWidget->setParent(this);
-    layoutWidget->setGeometry(QRect(650, 240, 350, 300));
-    layoutWidget->setLayout(NULL);
-    layoutWidget->setLayout(vbox_layout);
-
+//    layoutWidget->setLayout(vbox_layout);
+    layoutWidget->setGeometry(QRect(665, 260, 350, 300));
+    layoutWidget->show();
 }
 
 void InfoPage::refreshPreview()
@@ -720,6 +772,7 @@ void InfoPage::refreshPreview()
 
 int InfoPage::layoutImageIndex()
 {
+
     Information info = parent_wizard->info;
     if(info.vnum == 0 && info.orientation == 0 )
         return 1;
@@ -927,7 +980,7 @@ void ResultPage::initializePage()
 
             tableWidget->setItem(rowNum,0,new QTableWidgetItem(name));
             tableWidget->setItem(rowNum,1,new QTableWidgetItem(desc));
-//            tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
+//          tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
             tableWidget->setCellWidget(rowNum,2,lblTest);
             tableWidget->setItem(rowNum,3,new QTableWidgetItem(QString::number(result)));
             tableWidget->setItem(rowNum,4,new QTableWidgetItem("sets"));
@@ -1060,6 +1113,17 @@ ResultPage::ResultPage(QWidget *parent)
     parent_wizard = (ClassWizard *) parent;
     tableWidget = new QTableWidget; // 构造了一个QTableWidget的对象，并且设置为10行，5列
 
+    QPixmap pix(":/images/chiko/background.jpg");
+    QPixmap resPix = pix.scaled(1000,600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QLabel *lblTest = new QLabel;
+
+    lblTest->setGeometry(0,0,1000,600);
+    lblTest->setPixmap(resPix);
+
+    lblTest->setAlignment(Qt::AlignCenter);
+    lblTest->setParent(this);
+
+
     parent_wizard->resultTable = tableWidget;
     //    也可用下面的方法构造QTableWidget对象
     //    QTableWidget *tableWidget = new QTableWidget;
@@ -1074,11 +1138,6 @@ ResultPage::ResultPage(QWidget *parent)
 //! [15]
     setLayout(layout);
     setButtonText(QWizard::NextButton, "Save >");
-
-//    setStyleSheet("background-color:#181818");
-//    setPixmap(QWizard::BackgroundPixmap, QPixmap(":/images/chiko/login.jpg"));
-//    setPixmap(QWizard::LogoPixmap, QPixmap(":/images/chiko/login.jpg")); // Logo
-
 }
 //! [16]
 
