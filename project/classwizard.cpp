@@ -23,6 +23,7 @@
 
 #include "xlsxformat.h"
 #include <QObject>
+#include <QAbstractItemView>
 QTXLSX_USE_NAMESPACE
 
 ClassWizard::ClassWizard(QWidget *parent)
@@ -676,6 +677,10 @@ InfoPage::InfoPage(QWidget *parent)
     layout->addWidget(groupBox_number, 2,0,1,1);
     layout->addWidget(groupBox_checkbox, 2,1,1,1);
 
+
+    layout -> setColumnStretch(0, 1);
+    layout -> setColumnStretch(1, 1);
+
     QPixmap pix(":/images/chiko/background.jpg");
     QPixmap resPix = pix.scaled(1000,600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     QLabel *lblTest = new QLabel;
@@ -926,6 +931,8 @@ void ResultPage::initializePage()
     QXlsx::Document xlsx("rule.dat");
 
     tableWidget->clear();
+    tableWidget->setRowCount(12);     //设置行数为10
+    tableWidget->setColumnCount(5);   //设置列数为5
     QStringList header;
     header<<"Item no"<<"Description"<<"Image"<<"Qty"<<"Unit";
     tableWidget->setHorizontalHeaderLabels(header);
@@ -982,17 +989,22 @@ void ResultPage::initializePage()
             tableWidget->setItem(rowNum,1,new QTableWidgetItem(desc));
 //          tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
             tableWidget->setCellWidget(rowNum,2,lblTest);
-            tableWidget->setItem(rowNum,3,new QTableWidgetItem(QString::number(result)));
-            tableWidget->setItem(rowNum,4,new QTableWidgetItem("sets"));
+            QTableWidgetItem * item = new QTableWidgetItem(QString::number(result));
+            item->setTextAlignment(0x0084);
+            tableWidget->setItem(rowNum,3,item);
+
+            item = new QTableWidgetItem("sets");
+            item->setTextAlignment(0x0084);
+            tableWidget->setItem(rowNum,4,item);
 
             rowNum ++;
         }
     }
-
+    tableWidget->setEditTriggers(QTableView::NoEditTriggers);
     tableWidget->setRowCount(rowNum);
     tableWidget->resizeColumnToContents(0);
     tableWidget->resizeColumnToContents(1);
-
+    tableWidget->setColumnWidth(1,527);
 }
 
 int judgeEGType(int vnum,bool mcon,int orientation)
@@ -1113,22 +1125,17 @@ ResultPage::ResultPage(QWidget *parent)
     parent_wizard = (ClassWizard *) parent;
     tableWidget = new QTableWidget; // 构造了一个QTableWidget的对象，并且设置为10行，5列
 
-    QPixmap pix(":/images/chiko/background.jpg");
-    QPixmap resPix = pix.scaled(1000,600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    QLabel *lblTest = new QLabel;
+    this->setAutoFillBackground(true);
 
-    lblTest->setGeometry(0,0,1000,600);
-    lblTest->setPixmap(resPix);
-
-    lblTest->setAlignment(Qt::AlignCenter);
-    lblTest->setParent(this);
-
+    QPalette palette;
+    palette.setColor(QPalette::Background, QColor(73,144,186));
+    //palette.setBrush(QPalette::Background, QBrush(QPixmap(":/background.png")));
+    this->setPalette(palette);
 
     parent_wizard->resultTable = tableWidget;
     //    也可用下面的方法构造QTableWidget对象
     //    QTableWidget *tableWidget = new QTableWidget;
-    tableWidget->setRowCount(12);     //设置行数为10
-    tableWidget->setColumnCount(5);   //设置列数为5
+
     tableWidget->setWindowTitle("QTableWidget & Item");
     tableWidget->resize(350, 200);  //设置表格
 
