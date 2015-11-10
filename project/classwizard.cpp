@@ -1,6 +1,6 @@
 //! [0] //! [1]
 //!
- using namespace std;
+
 
 #include "classwizard.h"
 #include <qstring.h>
@@ -63,6 +63,19 @@ ClassWizard::ClassWizard(QWidget *parent)
 
 //    setPixmap(QWizard::NPixmaps, QPixmap(":/images/background.png"));
 
+
+    //    QXlsx::Document wind_eng_xlsx("wind_eng.dat");
+    //    QXlsx::Document wind_germany_xlsx("wind_germany.dat");
+    //    QXlsx::Document wind_japan_xlsx("wind_japan.dat");
+    //    QXlsx::Document wind_netherlands_xlsx("wind_netherlands.dat");
+    //    QXlsx::Document wind_Australia_xlsx("wind_Australia.dat");
+
+    this->loadCities("wind_eng.dat",this->citys_eng);
+    this->loadCities("wind_germany.dat",this->citys_ger);
+    this->loadCities("wind_japan.dat",this->citys_jap);
+    this->loadCities("wind_netherlands.dat",this->citys_hol);
+    this->loadCities("wind_Australia.dat",this->citys_aus);
+
     this->setGeometry(0,0,1000,800);
 
    //! [2]
@@ -96,6 +109,30 @@ void writePatternFillCell(Document &xlsx, const QString &cell, Format::FillPatte
 int judgeEGType(int vnum,bool mcon,int orientation);
 int componentNumber(int rowIndex,int columnIndex,int N,int M,int V,float L);
 QString findImageString(QString name);
+
+void ClassWizard::loadCities(QString fileName, QVector<QString> & vec)
+{
+    QXlsx::Document cities_xlsx(fileName);
+
+    int i = 2;
+
+    QString cellString ;
+    QString city;
+    do
+    {
+            char column = 'C' ;
+
+            cellString = column + QString::number(i);
+
+            QVariant v = cities_xlsx.read(cellString);
+
+            city = v.toString();
+
+            if(!city.isEmpty())
+                vec.push_front(city);
+            i++;
+    }while(!city.isEmpty());
+}
 
 void ClassWizard::save(QString fileName)
 {
@@ -369,9 +406,11 @@ IntroPage::IntroPage(QWidget *parent)
 
     cbo_sex = new QComboBox();
 
-    cbo_sex->addItem(QWidget::tr("CHN"));
-    cbo_sex->addItem(QWidget::tr("ENG"));
-    cbo_sex->addItem(QWidget::tr("USA"));
+    cbo_sex->addItem(QWidget::tr("Australia"));
+    cbo_sex->addItem(QWidget::tr("England"));
+    cbo_sex->addItem(QWidget::tr("Germany"));
+    cbo_sex->addItem(QWidget::tr("Japan"));
+    cbo_sex->addItem(QWidget::tr("Netherlands"));
 //    cbo_sex->insertItem(2, tr("Insert item"/*
 //    cbo_sex->insertSeparator(2);           */
 
@@ -408,7 +447,6 @@ IntroPage::IntroPage(QWidget *parent)
 void InfoPage::initializePage()
 {
     this->refreshPreview();
-
 }
 
 InfoPage::InfoPage(QWidget *parent)
@@ -561,8 +599,13 @@ InfoPage::InfoPage(QWidget *parent)
 
     QLabel * label_country = new QLabel(tr("Country"));
     cbo_country = new QComboBox();
-    cbo_country->addItem(QWidget::tr("CHN"));
-    cbo_country->addItem(QWidget::tr("USA"));
+    cbo_country->addItem(QWidget::tr("Australia"));
+    cbo_country->addItem(QWidget::tr("England"));
+    cbo_country->addItem(QWidget::tr("Germany"));
+    cbo_country->addItem(QWidget::tr("Japan"));
+    cbo_country->addItem(QWidget::tr("Netherlands"));
+
+    connect(cbo_country, SIGNAL(currentIndexChanged(int)), this, SLOT(onCountryChanged(int)));
 
     QLabel * label_city = new QLabel(tr("City"));
     cbo_city = new QComboBox();
@@ -706,6 +749,38 @@ InfoPage::InfoPage(QWidget *parent)
 
     widget->setLayout(layout);
     this->resize(766,341);
+}
+
+void InfoPage::refreshCities(QString country)
+{
+
+    QVector<QString> vec ;
+    if(country == "Australia")
+        vec = this->parent_wizard->citys_aus;
+    else if(country == "England")
+        vec = this->parent_wizard->citys_eng;
+    else if(country == "Germany")
+        vec = this->parent_wizard->citys_ger;
+    else if(country == "Japan")
+        vec = this->parent_wizard->citys_jap;
+    else if(country == "Netherlands")
+        vec = this->parent_wizard->citys_hol;
+
+    cbo_city->clear();
+
+    for (int i = 0; i < vec.size(); ++i)
+    {
+        QString city = vec.at(i);
+        cbo_city->addItem(city);
+    }
+
+}
+
+void InfoPage::onCountryChanged(int index)
+{
+    QString country = cbo_country->currentText();
+
+    this->refreshCities(country);
 }
 
 void InfoPage::refreshLayout()

@@ -9,6 +9,9 @@
 #include <qcombobox.h>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+
+
+ using namespace std;
 class Information
 {
 public:
@@ -48,6 +51,13 @@ public:
     Information info;
     QTableWidget *resultTable;
 
+    QVector<QString> citys_eng;
+    QVector<QString> citys_ger;
+    QVector<QString> citys_aus;
+    QVector<QString> citys_jap;
+    QVector<QString> citys_hol;
+
+    void loadCities(QString fileName, QVector<QString> & vec);
 };
 //! [0]
 
@@ -62,6 +72,7 @@ public:
 
 private:
     ClassWizard * parent_wizard;
+
 
     QLabel *classNameLabel;
     QLabel *baseClassLabel;
@@ -100,6 +111,7 @@ public:
     int layoutImageIndex();
 public slots: void refreshPreview();
 public slots: void refreshLayout();
+public slots: void onCountryChanged(int index);
 private:
     ClassWizard * parent_wizard;
 
@@ -130,6 +142,9 @@ private:
     QLineEdit * edt_building_L;
     QLineEdit * edt_building_W;
     QLineEdit * edt_building_H;
+
+    void refreshCities(QString country);
+
 };
 //! [2]
 
