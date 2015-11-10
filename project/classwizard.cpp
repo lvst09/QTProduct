@@ -129,7 +129,7 @@ void ClassWizard::loadCities(QString fileName, QVector<QString> & vec)
             city = v.toString();
 
             if(!city.isEmpty())
-                vec.push_front(city);
+                vec.push_back(city);
             i++;
     }while(!city.isEmpty());
 }
@@ -447,6 +447,8 @@ IntroPage::IntroPage(QWidget *parent)
 void InfoPage::initializePage()
 {
     this->refreshPreview();
+
+    this->refreshCities("Australia");
 }
 
 InfoPage::InfoPage(QWidget *parent)
@@ -609,8 +611,8 @@ InfoPage::InfoPage(QWidget *parent)
 
     QLabel * label_city = new QLabel(tr("City"));
     cbo_city = new QComboBox();
-    cbo_city->addItem(QWidget::tr("Shanghai"));
-    cbo_city->addItem(QWidget::tr("Beijing"));
+
+
 
     QGridLayout *vbox_city = new QGridLayout;
     vbox_city->addWidget(label_country, 1,0,1,1);
@@ -685,8 +687,7 @@ InfoPage::InfoPage(QWidget *parent)
 
     QVBoxLayout *vbox_checkbox = new QVBoxLayout;
     vbox_checkbox->addWidget(chk_mcon);
-//    vbox_checkbox->addWidget(chk_back_panel);
-//    vbox_checkbox->addWidget(chk_side_panel);
+
     vbox_checkbox->addWidget(chk_pushload_support);
     vbox_checkbox->addWidget(chk_buttom_panel);
     vbox_checkbox->addWidget(chk_plastic_cushion);
@@ -739,9 +740,6 @@ InfoPage::InfoPage(QWidget *parent)
     previewLabel->setAlignment(Qt::AlignCenter);
     previewLabel->setParent(this);
 
-//    layoutWidget = new QWidget();
-//    layoutWidget->setParent(this);
-//    layoutWidget->setGeometry(QRect(650, 240, 350, 300));
     layoutWidget = Q_NULLPTR;
     QWidget * widget = new QWidget();
     widget->setParent(this);
@@ -749,10 +747,13 @@ InfoPage::InfoPage(QWidget *parent)
 
     widget->setLayout(layout);
     this->resize(766,341);
+
+
 }
 
 void InfoPage::refreshCities(QString country)
 {
+
 
     QVector<QString> vec ;
     if(country == "Australia")
