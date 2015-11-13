@@ -19,12 +19,19 @@ public:
     float size_width;
     float size_height;
 
+    float windSpeed;
+    float ballastWeight;
+    QString country;
+    QString city;
+
     int vnum;//V
     int hnum;//N
     int mnum;//M
 
+    int buildingHeight;
     int angle;
     float power;
+    float weight;
     float mspace;
     int orientation;
 
@@ -34,6 +41,7 @@ public:
     bool buttom_panel;
     bool plastic_cushion;
     bool pushload_support;
+
 
     int egType;
 };
@@ -56,8 +64,18 @@ public:
     QVector<QString> citys_aus;
     QVector<QString> citys_jap;
     QVector<QString> citys_hol;
+    QVector<QString> citys_usa;
 
-    void loadCities(QString fileName, QVector<QString> & vec);
+    QVector<float> ws_eng;
+    QVector<float> ws_ger;
+    QVector<float> ws_aus;
+    QVector<float> ws_jap;
+    QVector<float> ws_hol;
+    QVector<float> ws_usa;
+
+    void loadCities(QString fileName, QVector<QString> & vecCities, QVector<float> & vecWSpeed);
+    QVector<float> & getCitiesVec(QString countryName);
+
 };
 //! [0]
 
@@ -139,9 +157,9 @@ private:
     QComboBox * cbo_country;
     QComboBox * cbo_city;
 
-    QLineEdit * edt_building_L;
-    QLineEdit * edt_building_W;
-    QLineEdit * edt_building_H;
+//    QLineEdit * edt_building_L;
+//    QLineEdit * edt_building_W;
+    QComboBox * cbo_building_H;
 
     void refreshCities(QString country);
 
@@ -159,6 +177,7 @@ public:
 
 protected:
     void initializePage();
+    void caculateBallastWight();
     //
     bool verifyConstraint(int rowIndex);
 private:

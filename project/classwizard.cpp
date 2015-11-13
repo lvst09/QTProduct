@@ -24,6 +24,7 @@
 #include "xlsxformat.h"
 #include <QObject>
 #include <QAbstractItemView>
+#include <math.h>
 QTXLSX_USE_NAMESPACE
 
 ClassWizard::ClassWizard(QWidget *parent)
@@ -64,17 +65,12 @@ ClassWizard::ClassWizard(QWidget *parent)
 //    setPixmap(QWizard::NPixmaps, QPixmap(":/images/background.png"));
 
 
-    //    QXlsx::Document wind_eng_xlsx("wind_eng.dat");
-    //    QXlsx::Document wind_germany_xlsx("wind_germany.dat");
-    //    QXlsx::Document wind_japan_xlsx("wind_japan.dat");
-    //    QXlsx::Document wind_netherlands_xlsx("wind_netherlands.dat");
-    //    QXlsx::Document wind_Australia_xlsx("wind_Australia.dat");
-
-    this->loadCities("wind_eng.dat",this->citys_eng);
-    this->loadCities("wind_germany.dat",this->citys_ger);
-    this->loadCities("wind_japan.dat",this->citys_jap);
-    this->loadCities("wind_netherlands.dat",this->citys_hol);
-    this->loadCities("wind_Australia.dat",this->citys_aus);
+    this->loadCities("wind_eng.dat",this->citys_eng, this->ws_eng);
+    this->loadCities("wind_germany.dat",this->citys_ger, this->ws_ger);
+    this->loadCities("wind_japan.dat",this->citys_jap, this->ws_jap);
+    this->loadCities("wind_netherlands.dat",this->citys_hol, this->ws_hol);
+    this->loadCities("wind_Australia.dat",this->citys_aus, this->ws_aus);
+    this->loadCities("wind_america.dat",this->citys_usa, this->ws_usa);
 
     this->setGeometry(0,0,1000,800);
 
@@ -110,7 +106,25 @@ int judgeEGType(int vnum,bool mcon,int orientation);
 int componentNumber(int rowIndex,int columnIndex,int N,int M,int V,float L);
 QString findImageString(QString name);
 
-void ClassWizard::loadCities(QString fileName, QVector<QString> & vec)
+QVector<float> & ClassWizard::getCitiesVec(QString countryName)
+{
+
+    if(countryName == "Australia")
+        return this->ws_aus;
+    else if(countryName == "America")
+        return this->ws_usa;
+    else if(countryName == "England")
+        return this->ws_eng;
+    else if(countryName == "Germany")
+        return this->ws_ger;
+    else if(countryName == "Japan")
+        return this->ws_jap;
+    else if(countryName == "Netherlands")
+        return this->ws_hol;
+
+}
+
+void ClassWizard::loadCities(QString fileName, QVector<QString> & vecCities ,QVector<float> & vecWSpeed)
 {
     QXlsx::Document cities_xlsx(fileName);
 
@@ -128,8 +142,18 @@ void ClassWizard::loadCities(QString fileName, QVector<QString> & vec)
 
             city = v.toString();
 
+            cellString = 'D' +  QString::number(i);
+
+            v = cities_xlsx.read(cellString);
+
+            float wSpeed = v.toFloat();
+
             if(!city.isEmpty())
-                vec.push_back(city);
+            {
+                vecCities.push_back(city);
+                vecWSpeed.push_back(wSpeed);
+            }
+
             i++;
     }while(!city.isEmpty());
 }
@@ -376,74 +400,7 @@ void ClassWizard::accept()
     return;
 }
 
-void IntroPage::onChanged(int index)
-{
-  QMessageBox::warning(this, "Message", cbo_sex->itemText(index), QMessageBox::Ok);
-}
 
-IntroPage::IntroPage(QWidget *parent)
-    : QWizardPage(parent)
-{
-    parent_wizard = (ClassWizard *) parent;
-    // 设置标题
-    setTitle(tr("CHIKO WELCOM...."));
-    setSubTitle(tr("Thank you to use CHIKO ballast system calculator"));
-    // 设置图片
-    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark1.png"));
-
-    classNameLabel = new QLabel(tr("User name:"));
-    classNameLineEdit = new QLineEdit;
-    classNameLineEdit->setText("chiko");
-    classNameLabel->setBuddy(classNameLineEdit);
-
-    baseClassLabel = new QLabel(tr("Email Address:"));
-    baseClassLineEdit = new QLineEdit;
-    baseClassLabel->setBuddy(baseClassLineEdit);
-
-    baseClassLabel1 = new QLabel(tr("Nation:"));
-    baseClassLineEdit1 = new QLineEdit;
-    baseClassLabel1->setBuddy(baseClassLineEdit1);
-
-    cbo_sex = new QComboBox();
-
-    cbo_sex->addItem(QWidget::tr("Australia"));
-    cbo_sex->addItem(QWidget::tr("England"));
-    cbo_sex->addItem(QWidget::tr("Germany"));
-    cbo_sex->addItem(QWidget::tr("Japan"));
-    cbo_sex->addItem(QWidget::tr("Netherlands"));
-//    cbo_sex->insertItem(2, tr("Insert item"/*
-//    cbo_sex->insertSeparator(2);           */
-
-//    gridLayout->addWidget(cbo_sex, 0, 1);
-
-//    connect(cbo_sex, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(IntroPage::on_sel_sex(const QString &)));
-
-    connect(cbo_sex, SIGNAL(currentIndexChanged(int)), this, SLOT(onChanged(int)));
-
-    // 展示标签
-
-    qobjectMacroCheckBox = new QCheckBox(tr("Can not be sent to out mail box?"));
-
-    registerField("className*", classNameLineEdit);
-    registerField("baseClass", baseClassLineEdit);
-
-    registerField("qobjectMacro", qobjectMacroCheckBox);
-
-    QGridLayout *layout = new QGridLayout;        // InfoPage的布局
-    layout->addWidget(classNameLabel, 0, 0);
-    layout->addWidget(classNameLineEdit, 0, 1);
-    layout->addWidget(baseClassLabel, 2, 0);
-    layout->addWidget(baseClassLineEdit, 2, 1);
-    layout->addWidget(baseClassLabel1, 4, 0);
-    layout->addWidget(cbo_sex, 4, 1);
-
-    layout->addWidget(qobjectMacroCheckBox, 6, 0, 1, 2);
-
-    setLayout(layout);
-}
-//! [7]
-
-//! [8] //! [9]
 void InfoPage::initializePage()
 {
     this->refreshPreview();
@@ -601,7 +558,10 @@ InfoPage::InfoPage(QWidget *parent)
 
     QLabel * label_country = new QLabel(tr("Country"));
     cbo_country = new QComboBox();
+
+    cbo_country->setFixedWidth(100);
     cbo_country->addItem(QWidget::tr("Australia"));
+    cbo_country->addItem(QWidget::tr("America"));
     cbo_country->addItem(QWidget::tr("England"));
     cbo_country->addItem(QWidget::tr("Germany"));
     cbo_country->addItem(QWidget::tr("Japan"));
@@ -611,7 +571,7 @@ InfoPage::InfoPage(QWidget *parent)
 
     QLabel * label_city = new QLabel(tr("City"));
     cbo_city = new QComboBox();
-
+    cbo_city->setFixedWidth(90);
 
 
     QGridLayout *vbox_city = new QGridLayout;
@@ -620,28 +580,40 @@ InfoPage::InfoPage(QWidget *parent)
     vbox_city->addWidget(label_city, 1,2,1,1);
     vbox_city->addWidget(cbo_city, 1,3,1,1);
 
-    QLabel * label_building_L = new QLabel(tr("Building L"));
-    edt_building_L = new QLineEdit();
-    edt_building_L->setValidator(new QIntValidator(0, 1000, this));
-    edt_building_L->setText("10");
-    QLabel * label_building_W = new QLabel(tr("W"));
-    edt_building_W = new QLineEdit();
-    edt_building_W->setValidator(new QIntValidator(0, 1000, this));
-    edt_building_W->setText("10");
-    QLabel * label_building_H = new QLabel(tr("H"));
-    edt_building_H = new QLineEdit();
-    edt_building_H->setValidator(new QIntValidator(0, 1000, this));
-    edt_building_H->setText("10");
+    QLabel * label_building_L = new QLabel(tr("Building "));
+//    edt_building_L = new QLineEdit();
+//    edt_building_L->setValidator(new QIntValidator(0, 1000, this));
+//    edt_building_L->setText("10");
+//    QLabel * label_building_W = new QLabel(tr("W"));
+//    edt_building_W = new QLineEdit();
+//    edt_building_W->setValidator(new QIntValidator(0, 1000, this));
+//    edt_building_W->setText("10");
+//    QLabel * label_building_H = new QLabel(tr("H"));
+
+    cbo_building_H = new QComboBox();
+
+    cbo_building_H->addItem(QWidget::tr("5"));
+    cbo_building_H->addItem(QWidget::tr("10"));
+    cbo_building_H->addItem(QWidget::tr("15"));
+    cbo_building_H->addItem(QWidget::tr("20"));
+    cbo_building_H->addItem(QWidget::tr("25"));
+    cbo_building_H->addItem(QWidget::tr("30"));
+    cbo_building_H->addItem(QWidget::tr("35"));
+    cbo_building_H->addItem(QWidget::tr("40"));
+
+//    cbo_building_H = new QLineEdit();
+//    edt_building_H->setValidator(new QIntValidator(0, 1000, this));
+//    edt_building_H->setText("10");
     QLabel * label_building_MM = new QLabel(tr("mm"));
 
     QGridLayout *vbox_building = new QGridLayout;
     vbox_building->addWidget(label_building_L, 1,0,1,1);
-    vbox_building->addWidget(edt_building_L, 1,1,1,1);
-    vbox_building->addWidget(label_building_W, 1,2,1,1);
-    vbox_building->addWidget(edt_building_W, 1,3,1,1);
-    vbox_building->addWidget(label_building_H, 1,4,1,1);
-    vbox_building->addWidget(edt_building_H, 1,5,1,1);
-    vbox_building->addWidget(label_building_MM, 1,6,1,1);
+//    vbox_building->addWidget(edt_building_L, 1,1,1,1);
+//    vbox_building->addWidget(label_building_W, 1,2,1,1);
+//    vbox_building->addWidget(edt_building_W, 1,3,1,1);
+//    vbox_building->addWidget(label_building_H, 1,4,1,1);
+    vbox_building->addWidget(cbo_building_H, 1,1,1,1);
+    vbox_building->addWidget(label_building_MM, 1,2,1,1);
 
     QWidget * widget_city = new QWidget();
     widget_city->setParent(this);
@@ -670,7 +642,7 @@ InfoPage::InfoPage(QWidget *parent)
     chk_back_panel = new QCheckBox(tr("Need back wind plate?"));
     chk_side_panel = new QCheckBox(tr("Need side wind plate?"));
     chk_pushload_support = new QCheckBox(tr("Ballast support rails?"));
-    chk_buttom_panel = new QCheckBox(tr("Need ballast plate?"));
+    chk_buttom_panel = new QCheckBox(tr("Need back ballast plate?"));
     chk_plastic_cushion = new QCheckBox(tr("Need rubber pad?"));
 
     chk_mcon->toggle();
@@ -699,12 +671,19 @@ InfoPage::InfoPage(QWidget *parent)
     registerField("edt_size_width", edt_size_width);
     registerField("edt_size_height", edt_size_height);
 
+    registerField("cbo_country", cbo_country);
+    registerField("cbo_city", cbo_city);
+
     registerField("cbo_vnum", cbo_vnum);
     registerField("edt_hnum", edt_hnum);
     registerField("edt_mnum", edt_mnum);
 
     registerField("cbo_angle", cbo_angle);
     registerField("edt_power", edt_power);
+    registerField("edt_weight", edt_weight);
+
+    registerField("cbo_building_H", cbo_building_H);
+
     registerField("edt_mspace", edt_mspace);
     registerField("cbo_orientation", cbo_orientation);
 
@@ -721,9 +700,8 @@ InfoPage::InfoPage(QWidget *parent)
     layout->addWidget(groupBox_number, 2,0,1,1);
     layout->addWidget(groupBox_checkbox, 2,1,1,1);
 
-
-    layout -> setColumnStretch(0, 1);
-    layout -> setColumnStretch(1, 1);
+    layout->setColumnStretch(0, 1);
+    layout->setColumnStretch(1, 1);
 
     QPixmap pix(":/images/chiko/background.jpg");
     QPixmap resPix = pix.scaled(1000,600, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -747,14 +725,10 @@ InfoPage::InfoPage(QWidget *parent)
 
     widget->setLayout(layout);
     this->resize(766,341);
-
-
 }
 
 void InfoPage::refreshCities(QString country)
 {
-
-
     QVector<QString> vec ;
     if(country == "Australia")
         vec = this->parent_wizard->citys_aus;
@@ -766,6 +740,8 @@ void InfoPage::refreshCities(QString country)
         vec = this->parent_wizard->citys_jap;
     else if(country == "Netherlands")
         vec = this->parent_wizard->citys_hol;
+    else if(country == "America")
+        vec = this->parent_wizard->citys_usa;
 
     cbo_city->clear();
 
@@ -806,7 +782,7 @@ void InfoPage::refreshLayout()
     QPixmap linepix(":/images/chiko/line.png");
     QPixmap lineResPix = linepix.scaled(15,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-//    QGridLayout *vbox_layout = new QGridLayout;
+    //QGridLayout *vbox_layout = new QGridLayout;
 
     for(int i = 0 ; i< 7 ; i++)
     {
@@ -875,12 +851,20 @@ bool InfoPage::validatePage()
     parent_wizard->info.size_width = field("edt_size_width").toFloat();
     parent_wizard->info.size_height = field("edt_size_height").toFloat();
 
+    parent_wizard->info.country =this->cbo_country->currentText();
+    parent_wizard->info.city = this->cbo_city->currentText();
+
+    QVector<float> wsVec = this->parent_wizard->getCitiesVec( parent_wizard->info.country);
+    parent_wizard->info.windSpeed = wsVec[this->cbo_city->currentIndex()];
+
+    parent_wizard->info.buildingHeight = this->cbo_building_H->currentText().toInt();
     parent_wizard->info.vnum = field("cbo_vnum").toInt();//V
     parent_wizard->info.hnum = field("edt_hnum").toInt();//N
     parent_wizard->info.mnum = field("edt_mnum").toInt();//M
 
     parent_wizard->info.angle = field("cbo_angle").toInt();
     parent_wizard->info.power = field("edt_power").toFloat();
+    parent_wizard->info.weight = field("edt_weight").toFloat();
     parent_wizard->info.mspace = field("edt_mspace").toFloat();
     parent_wizard->info.orientation = field("cbo_orientation").toInt();
 
@@ -900,6 +884,7 @@ bool InfoPage::validatePage()
     }
     return true;
 }
+
 bool ResultPage::validatePage()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"),
@@ -982,6 +967,66 @@ QString findImageString(QString name)
     return iconStr;
 }
 
+void ResultPage::caculateBallastWight()
+{
+    int height = this->parent_wizard->info.buildingHeight;
+    float ratio = 0;
+    switch(height)
+    {
+    case 5:
+        ratio = 0.79;
+        break;
+    case 10:
+        ratio = 0.93;
+        break;
+    case 15:
+        ratio = 1;
+        break;
+    case 20	:
+        ratio = 1.03;
+        break;
+    case 25	:
+        ratio = 1.05;
+        break;
+    case 30	:
+        ratio = 1.07;
+        break;
+    case 35	:
+        ratio = 1.085;
+        break;
+    case 40 :
+        ratio = 1.1;
+        break;
+    defaut:
+        ratio = 0;
+        break;
+    }
+
+    //design wind speed
+    float dws = this->parent_wizard->info.windSpeed * ratio;
+
+//    (1/2*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G)/9.8
+//    ((1/2*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G)-(1/2*设计风速*设计风速*1.274*0.27*1.655*COS60度))/9.8
+    float ballastWeight;
+    float angle = this->parent_wizard->info.angle;
+    float L = this->parent_wizard->info.size_length;
+    float W = this->parent_wizard->info.size_width;
+    float G = this->parent_wizard->info.weight;
+    if(!this->parent_wizard->info.buttom_panel)
+    {
+        ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)
+                *L / 1000
+                *W / 1000
+                -G) / 9.8;
+    }else
+    {
+        ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)*L / 1000*W / 1000-G)
+                -(0.5 * dws * dws * 1.274 * 0.27 * 1.655 *cos(60 *  3.1415926 / 180 )/9.8 );
+    }
+
+    this->parent_wizard->info.ballastWeight = ballastWeight;
+
+}
 void ResultPage::initializePage()
 {
     setTitle(tr("Result"));
@@ -995,6 +1040,7 @@ void ResultPage::initializePage()
     int M = parent_wizard->info.mnum;
     int N = parent_wizard->info.hnum;
     int V = parent_wizard->info.vnum;
+
     if(parent_wizard->info.vnum == 1){
         V = 2;
     }else{
@@ -1076,6 +1122,20 @@ void ResultPage::initializePage()
             rowNum ++;
         }
     }
+
+//    tableWidget->setItem(rowNum,0,new QTableWidgetItem(name));
+    tableWidget->setItem(rowNum,1,new QTableWidgetItem("Ballast Weight for one array"));
+//          tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
+//    tableWidget->setCellWidget(rowNum,2,lblTest);
+    QTableWidgetItem * item = new QTableWidgetItem(QString::number(this->parent_wizard->info.ballastWeight));
+    item->setTextAlignment(0x0084);
+    tableWidget->setItem(rowNum,3,item);
+    item = new QTableWidgetItem("KG");
+    item->setTextAlignment(0x0084);
+    tableWidget->setItem(rowNum,4,item);
+
+    rowNum ++;
+
     tableWidget->setEditTriggers(QTableView::NoEditTriggers);
     tableWidget->setRowCount(rowNum);
     tableWidget->resizeColumnToContents(0);
