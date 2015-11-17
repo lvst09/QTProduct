@@ -29,7 +29,7 @@ public:
     int mnum;//M
 
     int buildingHeight;
-    int angle;
+    QString angle;
     float power;
     float weight;
     float mspace;

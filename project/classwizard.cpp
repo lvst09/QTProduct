@@ -197,18 +197,7 @@ void ClassWizard::save(QString fileName)
     str += info.back_panel==true ? "Yes" : "Not";
     xlsx.write("E3", str);
 
-    QString angle;
-    if(info.angle == 0){
-        angle = "10";
-    }else if(info.angle == 1){
-        angle = "15";
-    }else if(info.angle == 2){
-        angle = "20";
-    }else if(info.angle == 3){
-        angle = "30";
-    }else{
-        angle ="CUSTOM";
-    }
+    QString angle = info.angle ;
 
     QXlsx::Format format6;
     format6.setPatternBackgroundColor(QColor(Qt::gray));
@@ -421,9 +410,9 @@ InfoPage::InfoPage(QWidget *parent)
     edt_size_width = new QLineEdit();
     edt_size_height = new QLineEdit();
 
-    edt_size_length->setText("10");
-    edt_size_width->setText("10");
-    edt_size_height->setText("10");
+    edt_size_length->setText("1640");
+    edt_size_width->setText("992");
+    edt_size_height->setText("40");
 
     edt_size_length->setValidator(new QIntValidator(0, 2000, this));
     edt_size_width->setValidator(new QIntValidator(0, 2000, this));
@@ -469,12 +458,12 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_power = new QLabel(tr("Power W"));
     edt_power = new QLineEdit();
     edt_power->setValidator(new QIntValidator(0, 1000, this));
-    edt_power->setText("10");
+    edt_power->setText("250");
 
     QLabel * label_weight = new QLabel(tr("Weight KG"));
     edt_weight = new QLineEdit();
     edt_weight->setValidator(new QIntValidator(0, 1000, this));
-    edt_weight->setText("10");
+    edt_weight->setText("20");
 
     QGridLayout *vbox_weight = new QGridLayout;
     vbox_weight->addWidget(label_power, 1,0,1,1);
@@ -513,7 +502,7 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_hnum = new QLabel(tr("Horizontal QTY"));
     edt_hnum = new QLineEdit();
     edt_hnum->setValidator(new QIntValidator(0, 1000, this));
-    edt_hnum->setText("10");
+    edt_hnum->setText("15");
     QLabel * label_mnum = new QLabel(tr("Array QTY"));
     edt_mnum = new QLineEdit();
     edt_mnum->setValidator(new QIntValidator(0, 1000, this));
@@ -522,7 +511,7 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_mspace = new QLabel(tr("Spacing between every array mm"));
     edt_mspace = new QLineEdit();
     edt_mspace->setValidator(new QIntValidator(0, 1000, this));
-    edt_mspace->setText("10");
+    edt_mspace->setText("700");
 
     QGroupBox *groupBox_number = new QGroupBox(tr("Array info"));
 
@@ -573,7 +562,6 @@ InfoPage::InfoPage(QWidget *parent)
     cbo_city = new QComboBox();
     cbo_city->setFixedWidth(90);
 
-
     QGridLayout *vbox_city = new QGridLayout;
     vbox_city->addWidget(label_country, 1,0,1,1);
     vbox_city->addWidget(cbo_country, 1,1,1,1);
@@ -601,17 +589,13 @@ InfoPage::InfoPage(QWidget *parent)
     cbo_building_H->addItem(QWidget::tr("35"));
     cbo_building_H->addItem(QWidget::tr("40"));
 
-//    cbo_building_H = new QLineEdit();
-//    edt_building_H->setValidator(new QIntValidator(0, 1000, this));
-//    edt_building_H->setText("10");
+//  cbo_building_H = new QLineEdit();
+//  edt_building_H->setValidator(new QIntValidator(0, 1000, this));
+//  edt_building_H->setText("10");
     QLabel * label_building_MM = new QLabel(tr("mm"));
 
     QGridLayout *vbox_building = new QGridLayout;
     vbox_building->addWidget(label_building_L, 1,0,1,1);
-//    vbox_building->addWidget(edt_building_L, 1,1,1,1);
-//    vbox_building->addWidget(label_building_W, 1,2,1,1);
-//    vbox_building->addWidget(edt_building_W, 1,3,1,1);
-//    vbox_building->addWidget(label_building_H, 1,4,1,1);
     vbox_building->addWidget(cbo_building_H, 1,1,1,1);
     vbox_building->addWidget(label_building_MM, 1,2,1,1);
 
@@ -621,8 +605,8 @@ InfoPage::InfoPage(QWidget *parent)
     widget_city->setLayout(vbox_city);
 
     QWidget * widget_building = new QWidget();
+    widget_building->setGeometry(QRect(0, 0, 650, 120));
     widget_building->setParent(this);
-    widget_building->setGeometry(QRect(0, 0, 650, 50));
     widget_building->setLayout(vbox_building);
 
     QGroupBox *groupBox_value = new QGroupBox(tr("Ballast I Console info"));
@@ -862,7 +846,11 @@ bool InfoPage::validatePage()
     parent_wizard->info.hnum = field("edt_hnum").toInt();//N
     parent_wizard->info.mnum = field("edt_mnum").toInt();//M
 
-    parent_wizard->info.angle = field("cbo_angle").toInt();
+
+
+    parent_wizard->info.angle = this->cbo_angle->currentText();
+//    QMessageBox::warning(0,"PATH", this->cbo_angle->currentText(),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",parent_wizard->info.angle,QMessageBox::Yes);
     parent_wizard->info.power = field("edt_power").toFloat();
     parent_wizard->info.weight = field("edt_weight").toFloat();
     parent_wizard->info.mspace = field("edt_mspace").toFloat();
@@ -1005,34 +993,49 @@ void ResultPage::caculateBallastWight()
     //design wind speed
     float dws = this->parent_wizard->info.windSpeed * ratio;
 
-//    (1/2*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G)/9.8
-//    ((1/2*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G)-(1/2*设计风速*设计风速*1.274*0.27*1.655*COS60度))/9.8
+    QMessageBox::warning(0,"PATH",QString::number(this->parent_wizard->info.windSpeed),QMessageBox::Yes);
+    QMessageBox::warning(0,"PATH",QString::number(ratio),QMessageBox::Yes);
+
+//    (0.5*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G*9.8-14.5)/9.8
+//    ((0.5*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G*9.8-14.5)-(0.5*设计风速*设计风速*1.274*0.27*1.655*COS60度))/9.8
     float ballastWeight;
-    float angle = this->parent_wizard->info.angle;
+    float angle = this->parent_wizard->info.angle.toFloat();
     float L = this->parent_wizard->info.size_length;
     float W = this->parent_wizard->info.size_width;
     float G = this->parent_wizard->info.weight;
+
+    QMessageBox::warning(0,"PATH",QString::number(angle),QMessageBox::Yes);
+    QMessageBox::warning(0,"PATH",QString::number(L),QMessageBox::Yes);
+    QMessageBox::warning(0,"PATH",QString::number(W),QMessageBox::Yes);
+    QMessageBox::warning(0,"PATH",QString::number(G),QMessageBox::Yes);
+
     if(!this->parent_wizard->info.buttom_panel)
     {
+        QMessageBox::warning(0,"PATH",QString::number(1),QMessageBox::Yes);
+
         ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)
                 *L / 1000
                 *W / 1000
-                -G) / 9.8;
+                -G*9.8 - 14.5) / 9.8;
     }else
     {
-        ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)*L / 1000*W / 1000-G)
+        QMessageBox::warning(0,"PATH",QString::number(2),QMessageBox::Yes);
+
+        ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)*L / 1000*W / 1000-G*9.8 - 14.5)
                 -(0.5 * dws * dws * 1.274 * 0.27 * 1.655 *cos(60 *  3.1415926 / 180 )/9.8 );
     }
 
     this->parent_wizard->info.ballastWeight = ballastWeight;
-
 }
+
 void ResultPage::initializePage()
 {
     setTitle(tr("Result"));
     setSubTitle(tr("According to "
                    "your information,the components list as following for your reference."));
     setPixmap(QWizard::LogoPixmap, QPixmap(":/images/logo2.png"));
+
+    this->caculateBallastWight();
 
     int colum = parent_wizard->info.egType + 4;
     int row = 5;
@@ -1064,18 +1067,8 @@ void ResultPage::initializePage()
         row = 5 + i;
         QVariant v = xlsx.read(row,colum);
 
-        QString angle;
-        if(parent_wizard->info.angle == 0){
-            angle = "10";
-        }else if(parent_wizard->info.angle == 1){
-            angle = "15";
-        }else if(parent_wizard->info.angle == 2){
-            angle = "20";
-        }else if(parent_wizard->info.angle == 3){
-            angle = "30";
-        }else{
-            angle ="CUSTOM";
-        }
+        QString angle =  parent_wizard->info.angle ;
+
 
         float result = 0;
         if(v.toString() != "N" && verifyConstraint(i))
