@@ -318,6 +318,7 @@ void ClassWizard::save(QString fileName)
 
     for(int i = 0 ; i < resultTable->rowCount(); i++)
     {
+
         cellString = "C" ;
         cellString += QString::number(i+13);
         cellString += ":E";
@@ -332,7 +333,7 @@ void ClassWizard::save(QString fileName)
         xlsx.write(cellString,QString::number(i+1));
         xlsx.setRowFormat(i+14, format);
 
-        QString imageName ;
+                QString imageName ;
         for(int j = 0 ; j < resultTable->columnCount(); j++)
         {
             char column = 'B' ;
@@ -340,6 +341,8 @@ void ClassWizard::save(QString fileName)
             column += j;
             cellString = column + QString::number(i+13);
             writeBorderStyleCell(xlsx, cellString, "", Format::BorderThin);
+
+
 
             if(j>2)
                 column += 2;
@@ -365,10 +368,12 @@ void ClassWizard::save(QString fileName)
                 xlsx.write(cellString,item->text());
             }
         }
+        QMessageBox::warning(0,"PATH",QString::number(i),QMessageBox::Yes);
 
 //      cellString = "A" +QString::number(i+13);
         xlsx.setRowHeight(i+13,43.1*ratio);
     }
+
 
     QImage tail(":/images/chiko/tail.tif");
         xlsx.insertImage(13 + resultTable->rowCount(), 0, tail);
@@ -993,8 +998,8 @@ void ResultPage::caculateBallastWight()
     //design wind speed
     float dws = this->parent_wizard->info.windSpeed * ratio;
 
-    QMessageBox::warning(0,"PATH",QString::number(this->parent_wizard->info.windSpeed),QMessageBox::Yes);
-    QMessageBox::warning(0,"PATH",QString::number(ratio),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",QString::number(this->parent_wizard->info.windSpeed),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",QString::number(ratio),QMessageBox::Yes);
 
 //    (0.5*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G*9.8-14.5)/9.8
 //    ((0.5*设计风速*设计风速*1.274*COS角度*L/1000*W/1000-G*9.8-14.5)-(0.5*设计风速*设计风速*1.274*0.27*1.655*COS60度))/9.8
@@ -1004,25 +1009,25 @@ void ResultPage::caculateBallastWight()
     float W = this->parent_wizard->info.size_width;
     float G = this->parent_wizard->info.weight;
 
-    QMessageBox::warning(0,"PATH",QString::number(angle),QMessageBox::Yes);
-    QMessageBox::warning(0,"PATH",QString::number(L),QMessageBox::Yes);
-    QMessageBox::warning(0,"PATH",QString::number(W),QMessageBox::Yes);
-    QMessageBox::warning(0,"PATH",QString::number(G),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",QString::number(angle),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",QString::number(L),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",QString::number(W),QMessageBox::Yes);
+//    QMessageBox::warning(0,"PATH",QString::number(G),QMessageBox::Yes);
 
     if(!this->parent_wizard->info.buttom_panel)
     {
-        QMessageBox::warning(0,"PATH",QString::number(1),QMessageBox::Yes);
+//        QMessageBox::warning(0,"PATH",QString::number(1),QMessageBox::Yes);
 
         ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)
                 *L / 1000
                 *W / 1000
-                -G*9.8 - 14.5) / 9.8;
+                -G*9.8 ) / 9.8;
     }else
     {
-        QMessageBox::warning(0,"PATH",QString::number(2),QMessageBox::Yes);
+//        QMessageBox::warning(0,"PATH",QString::number(2),QMessageBox::Yes);
 
-        ballastWeight = (0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)*L / 1000*W / 1000-G*9.8 - 14.5)
-                -(0.5 * dws * dws * 1.274 * 0.27 * 1.655 *cos(60 *  3.1415926 / 180 )/9.8 );
+        ballastWeight = ((0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)*L / 1000*W / 1000-G*9.8 )
+                -(0.5 * dws * dws * 1.274 * 0.34 * 1.655 *cos(60 *  3.1415926 / 180 )))/9.8 ;
     }
 
     this->parent_wizard->info.ballastWeight = ballastWeight;
@@ -1116,9 +1121,9 @@ void ResultPage::initializePage()
         }
     }
 
-//    tableWidget->setItem(rowNum,0,new QTableWidgetItem(name));
+    tableWidget->setItem(rowNum,0,new QTableWidgetItem(""));
     tableWidget->setItem(rowNum,1,new QTableWidgetItem("Ballast Weight for one array"));
-//          tableWidget->setItem(rowNum,2,new QTableWidgetItem(icon, ""));
+    tableWidget->setItem(rowNum,2,new QTableWidgetItem(""));
 //    tableWidget->setCellWidget(rowNum,2,lblTest);
     QTableWidgetItem * item = new QTableWidgetItem(QString::number(this->parent_wizard->info.ballastWeight));
     item->setTextAlignment(0x0084);
