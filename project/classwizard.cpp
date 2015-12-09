@@ -1029,6 +1029,12 @@ void ResultPage::caculateBallastWight()
         ballastWeight = ((0.5 * dws * dws * 1.274 *cos(angle *  3.1415926 / 180)*L / 1000*W / 1000-G*9.8 )
                 -(0.5 * dws * dws * 1.274 * 0.34 * 1.655 *cos(60 *  3.1415926 / 180 )))/9.8 ;
     }
+//     QMessageBox::warning(0,"PATH",QString::number(this->parent_wizard->info.hnum),QMessageBox::Yes);
+//     QMessageBox::warning(0,"PATH",QString::number(this->parent_wizard->info.vnum),QMessageBox::Yes);
+
+     int vnum = this->parent_wizard->info.vnum == 1 ? 2:1;
+
+     ballastWeight *= this->parent_wizard->info.hnum * vnum;
 
     this->parent_wizard->info.ballastWeight = ballastWeight;
 }
