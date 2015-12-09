@@ -368,7 +368,7 @@ void ClassWizard::save(QString fileName)
                 xlsx.write(cellString,item->text());
             }
         }
-        QMessageBox::warning(0,"PATH",QString::number(i),QMessageBox::Yes);
+//      QMessageBox::warning(0,"PATH",QString::number(i),QMessageBox::Yes);
 
 //      cellString = "A" +QString::number(i+13);
         xlsx.setRowHeight(i+13,43.1*ratio);
@@ -956,7 +956,13 @@ QString findImageString(QString name)
          iconStr=(":/images/chiko/CK-FTE-F.jpg");
     }else if(name.indexOf("CK-FZM")==0){
          iconStr=(":/images/chiko/CK-FTM-F.jpg");
+    }else if(name.indexOf("CK-BT-BSP")==0){
+        iconStr=(":/images/chiko/CK-BT-BSP.jpg");
+    }else if(name.indexOf("CK-CB-")==0){
+        iconStr=(":/images/chiko/CK-CB-.jpg");
     }
+
+
     return iconStr;
 }
 
@@ -1121,10 +1127,17 @@ void ResultPage::initializePage()
         }
     }
 
+    QString iconStr = findImageString("CK-CB-");
+    QPixmap pix(iconStr);
+    QPixmap resPix = pix.scaled(27,27, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    QLabel *lblTest = new QLabel;
+    lblTest->setPixmap(resPix);
+    lblTest->setAlignment(Qt::AlignCenter);
+
     tableWidget->setItem(rowNum,0,new QTableWidgetItem(""));
     tableWidget->setItem(rowNum,1,new QTableWidgetItem("Ballast Weight for one array"));
     tableWidget->setItem(rowNum,2,new QTableWidgetItem(""));
-//    tableWidget->setCellWidget(rowNum,2,lblTest);
+    tableWidget->setCellWidget(rowNum,2,lblTest);
     QTableWidgetItem * item = new QTableWidgetItem(QString::number(this->parent_wizard->info.ballastWeight));
     item->setTextAlignment(0x0084);
     tableWidget->setItem(rowNum,3,item);
