@@ -39,6 +39,7 @@ public:
     bool back_panel;
     bool side_panel;
     bool buttom_panel;
+    bool base_plate;
     bool plastic_cushion;
     bool pushload_support;
 
@@ -130,6 +131,9 @@ public:
 public slots: void refreshPreview();
 public slots: void refreshLayout();
 public slots: void onCountryChanged(int index);
+public slots: void edt_hnumTextChanged(const QString &);
+public slots: void edt_mnumTextChanged(const QString &);
+
 private:
     ClassWizard * parent_wizard;
 
@@ -150,6 +154,7 @@ private:
     QCheckBox * chk_back_panel;
     QCheckBox * chk_side_panel;
     QCheckBox * chk_buttom_panel;
+    QCheckBox * chk_base_plate;
     QCheckBox * chk_plastic_cushion;
     QCheckBox * chk_pushload_support;
 

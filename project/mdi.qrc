@@ -43,5 +43,6 @@
         <file>images/chiko/line.png</file>
         <file>images/chiko/CK-BT-BSP.jpg</file>
         <file>images/chiko/CK-CB-.jpg</file>
+        <file>images/chiko/vertical_line.png</file>
     </qresource>
 </RCC>

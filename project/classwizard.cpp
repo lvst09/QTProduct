@@ -106,6 +106,7 @@ int judgeEGType(int vnum,bool mcon,int orientation);
 int componentNumber(int rowIndex,int columnIndex,int N,int M,int V,float L);
 QString findImageString(QString name);
 
+
 QVector<float> & ClassWizard::getCitiesVec(QString countryName)
 {
 
@@ -431,7 +432,6 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_height = new QLabel(QWidget::tr("Thickness mm"));
     label_height->setBuddy(edt_size_height);
 
-
     QGridLayout *vbox_length = new QGridLayout;
     vbox_length->addWidget(label_length, 1,0,1,1);
     vbox_length->addWidget(edt_size_length, 1,1,1,1);
@@ -512,6 +512,10 @@ InfoPage::InfoPage(QWidget *parent)
     edt_mnum = new QLineEdit();
     edt_mnum->setValidator(new QIntValidator(0, 1000, this));
     edt_mnum->setText("10");
+
+    //connect(lineEdit,SIGNAL(textChanged(QString &)),this,SLOT(enableFindButton(QString &)));
+    connect(edt_hnum,SIGNAL(textChanged(const QString &)),this,SLOT(edt_hnumTextChanged(const QString &)));
+    connect(edt_mnum,SIGNAL(textChanged(const QString &)),this,SLOT(edt_mnumTextChanged(const QString &)));
 
     QLabel * label_mspace = new QLabel(tr("Spacing between every array mm"));
     edt_mspace = new QLineEdit();
@@ -632,6 +636,7 @@ InfoPage::InfoPage(QWidget *parent)
     chk_side_panel = new QCheckBox(tr("side wind plate?"));
     chk_pushload_support = new QCheckBox(tr("Ballast support rails?"));
     chk_buttom_panel = new QCheckBox(tr("Back plate?"));
+    chk_base_plate = new QCheckBox(tr("Base ballast plate?"));
     chk_plastic_cushion = new QCheckBox(tr("Rubber pad?"));
 
     chk_mcon->toggle();
@@ -651,6 +656,7 @@ InfoPage::InfoPage(QWidget *parent)
 
     vbox_checkbox->addWidget(chk_pushload_support);
     vbox_checkbox->addWidget(chk_buttom_panel);
+    vbox_checkbox->addWidget(chk_base_plate);
     vbox_checkbox->addWidget(chk_plastic_cushion);
 
     vbox_checkbox->addStretch(1);
@@ -680,6 +686,7 @@ InfoPage::InfoPage(QWidget *parent)
     registerField("chk_back_panel", chk_back_panel);
     registerField("chk_side_panel", chk_side_panel);
     registerField("chk_buttom_panel", chk_buttom_panel);
+    registerField("chk_base_plate", chk_base_plate);
     registerField("chk_plastic_cushion", chk_plastic_cushion);
     registerField("chk_pushload_support", chk_pushload_support);
 
@@ -741,6 +748,21 @@ void InfoPage::refreshCities(QString country)
     }
 
 }
+void InfoPage::edt_hnumTextChanged(const QString &)
+{
+    int origin_hnum = parent_wizard->info.hnum;
+    parent_wizard->info.hnum = field("edt_hnum").toInt();//N
+    if( (origin_hnum - 11.99) * (parent_wizard->info.hnum - 11.99) <= 0 )
+        this->refreshLayout();
+}
+
+void InfoPage::edt_mnumTextChanged(const QString &)
+{
+    int origin_mnum = parent_wizard->info.mnum;
+    parent_wizard->info.mnum = field("edt_mnum").toInt();//M
+    if( (origin_mnum - 6.99) * (parent_wizard->info.mnum - 6.99) <= 0 )
+        this->refreshLayout();
+}
 
 void InfoPage::onCountryChanged(int index)
 {
@@ -771,15 +793,43 @@ void InfoPage::refreshLayout()
     QPixmap linepix(":/images/chiko/line.png");
     QPixmap lineResPix = linepix.scaled(15,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
+    QPixmap vertical_linepix(":/images/chiko/vertical_line.png");
+
     //QGridLayout *vbox_layout = new QGridLayout;
+
 
     for(int i = 0 ; i< 7 ; i++)
     {
         for(int j = 0 ; j< 13 ; j+=1)
         {
             QLabel * label = new QLabel(layoutWidget);
-            label->setPixmap(resPix);
-            label->setGeometry(i* (31 + 15),j * 20,31,20);
+            if(parent_wizard->info.hnum >= 12 && j == 11){
+
+                if(parent_wizard->info.mnum >= 7 && i==5)
+                    continue;
+
+                label->setPixmap(vertical_linepix);
+                label->setGeometry(i* (31 + 15)+30,j * 20,1,21);
+
+
+                continue;
+            }else if(parent_wizard->info.mnum >= 7 && i==5){
+
+                label->setPixmap(lineResPix);
+                label->setGeometry(i* (31 + 15)+ 0.5,j * 20 + 19,15,1);
+                label = new QLabel(layoutWidget);
+                label->setPixmap(lineResPix);
+                label->setGeometry(i* (31 + 15) + 15.2,j * 20 + 19,15,1);
+
+
+            }else{
+                label->setPixmap(resPix);
+                label->setGeometry(i* (31 + 15),j * 20,31,20);
+            }
+
+//            label->setGeometry(i* (31 + 15),j * 20,31,20);
+
+
 //            vbox_layout->addWidget(label, i,j,1,1);
 
             if(i==6)
@@ -865,6 +915,7 @@ bool InfoPage::validatePage()
     parent_wizard->info.back_panel = field("chk_back_panel").toBool();
     parent_wizard->info.side_panel = field("chk_side_panel").toBool();
     parent_wizard->info.buttom_panel = field("chk_buttom_panel").toBool();
+    parent_wizard->info.base_plate = field("chk_base_plate").toBool();
     parent_wizard->info.plastic_cushion = field("chk_plastic_cushion").toBool();
     parent_wizard->info.pushload_support = field("chk_pushload_support").toBool();
 
@@ -904,7 +955,7 @@ bool ResultPage::verifyConstraint(int rowIndex)
     case 4:
         return  parent_wizard->info.side_panel;
     case 5:
-        return  parent_wizard->info.back_panel;
+        return  parent_wizard->info.back_panel  && parent_wizard->info.buttom_panel;
     case 6:
         return  parent_wizard->info.side_panel;
     case 7:
@@ -913,11 +964,11 @@ bool ResultPage::verifyConstraint(int rowIndex)
     case 9:
         return true;
     case 10:
-        return parent_wizard->info.pushload_support ;
+        return parent_wizard->info.pushload_support  ;
     case 11:
         return parent_wizard->info.pushload_support;
     case 12:
-        return parent_wizard->info.mcon && parent_wizard->info.pushload_support;
+        return parent_wizard->info.mcon && parent_wizard->info.pushload_support && parent_wizard->info.base_plate;
     case 13:
         return parent_wizard->info.plastic_cushion;
     case 14:
@@ -1085,7 +1136,6 @@ void ResultPage::initializePage()
         QVariant v = xlsx.read(row,colum);
 
         QString angle =  parent_wizard->info.angle ;
-
 
         float result = 0;
         if(v.toString() != "N" && verifyConstraint(i))
