@@ -193,7 +193,7 @@ void ClassWizard::save(QString fileName)
                QString::number(info.size_width) + "*" +
                QString::number(info.size_height) + " mm");
 
-    QString str = "Need Back Plate: " ;
+    QString str = "Back Plate: " ;
     str += info.back_panel==true ? "Yes" : "Not";
     xlsx.write("E3", str);
 
@@ -207,7 +207,7 @@ void ClassWizard::save(QString fileName)
     str += " DEG";
     xlsx.write("A4", str);
 
-    str = "Need Side Plate: " ;
+    str = "Side Plate: " ;
     str += info.side_panel==true ? "Yes" : "Not";
     xlsx.write("E4", str);
 
@@ -216,7 +216,7 @@ void ClassWizard::save(QString fileName)
     str += " W";
     xlsx.write("A5", str);
 
-    str = "Need Ballast Plate: " ;
+    str = "Ballast Plate: " ;
     str += info.buttom_panel==true ? "Yes" : "Not";
     xlsx.write("E5", str);
 
@@ -243,11 +243,11 @@ void ClassWizard::save(QString fileName)
     str += " MM";
     xlsx.write("A10", str);
 
-    str = "Need Rubber pad: " ;
+    str = "Rubber pad: " ;
     str += info.plastic_cushion==true ? "Yes" : "Not";
     xlsx.write("E6", str);
 
-    str = "Need Ballast Rail Support: " ;
+    str = "Ballast Rail Support: " ;
     str += info.pushload_support==true ? "Yes" : "Not";
     xlsx.write("E7", str);
 
@@ -628,11 +628,11 @@ InfoPage::InfoPage(QWidget *parent)
     groupBox_value->setLayout(vbox_value);
 
     chk_mcon = new QCheckBox(tr("All array connected?"));
-    chk_back_panel = new QCheckBox(tr("Need back wind plate?"));
-    chk_side_panel = new QCheckBox(tr("Need side wind plate?"));
+    chk_back_panel = new QCheckBox(tr("back wind plate?"));
+    chk_side_panel = new QCheckBox(tr("side wind plate?"));
     chk_pushload_support = new QCheckBox(tr("Ballast support rails?"));
-    chk_buttom_panel = new QCheckBox(tr("Need back ballast plate?"));
-    chk_plastic_cushion = new QCheckBox(tr("Need rubber pad?"));
+    chk_buttom_panel = new QCheckBox(tr("Back plate?"));
+    chk_plastic_cushion = new QCheckBox(tr("Rubber pad?"));
 
     chk_mcon->toggle();
     chk_pushload_support->toggle();
