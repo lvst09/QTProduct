@@ -968,7 +968,8 @@ bool ResultPage::verifyConstraint(int rowIndex)
     case 11:
         return parent_wizard->info.pushload_support;
     case 12:
-        return parent_wizard->info.mcon && parent_wizard->info.pushload_support && parent_wizard->info.base_plate;
+//        return parent_wizard->info.mcon && parent_wizard->info.pushload_support && parent_wizard->info.base_plate;
+        return parent_wizard->info.base_plate;
     case 13:
         return parent_wizard->info.plastic_cushion;
     case 14:
