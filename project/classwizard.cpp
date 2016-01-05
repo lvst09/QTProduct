@@ -807,19 +807,32 @@ void InfoPage::refreshLayout()
 
                 if(parent_wizard->info.mnum >= 7 && i==5)
                     continue;
+//                if(this->parent_wizard->info.mcon)
+                {
+                    label->setPixmap(vertical_linepix);
 
-                label->setPixmap(vertical_linepix);
-                label->setGeometry(i* (31 + 15)+30,j * 20,1,21);
+                    if(layoutType == 1 || layoutType == 2){
+                        label->setGeometry(i* (31 + 15)+30,j * 20,1,21);
+                    }
+                    else{
+                        label->setGeometry(i* (31 + 15)+15,j * 20,1,21);
+                    }
+                }
+
 
 
                 continue;
             }else if(parent_wizard->info.mnum >= 7 && i==5){
 
-                label->setPixmap(lineResPix);
-                label->setGeometry(i* (31 + 15)+ 0.5,j * 20 + 19,15,1);
-                label = new QLabel(layoutWidget);
-                label->setPixmap(lineResPix);
-                label->setGeometry(i* (31 + 15) + 15.2,j * 20 + 19,15,1);
+//                if(this->parent_wizard->info.mcon)
+                {
+                    label->setPixmap(lineResPix);
+                    label->setGeometry(i* (31 + 15)+ 0.5,j * 20 + 19,15,1);
+                    label = new QLabel(layoutWidget);
+                    label->setPixmap(lineResPix);
+                    label->setGeometry(i* (31 + 15) + 15.2,j * 20 + 19,15,1);
+                }
+
 
 
             }else{

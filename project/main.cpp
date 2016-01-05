@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
         QString BKE_CURRENT_DIR = QFileInfo(exeDir).path() ;
         QStringList  libpath;
         libpath << BKE_CURRENT_DIR+QString::fromLocal8Bit("s/platforms");    libpath << BKE_CURRENT_DIR <<BKE_CURRENT_DIR+QString::fromLocal8Bit("/plugins/imageformats");    libpath << BKE_CURRENT_DIR+QString::fromLocal8Bit("/plugins");    libpath << QApplication::libraryPaths();    QApplication::setLibraryPaths(libpath) ;
-    if(current_date.startsWith("2016"))
-        return 0 ;
+//    if(current_date.startsWith("2016"))
+//        return 0 ;
     MainWindow mainWin;
 
 //    foreach (const QString &fileName, parser.positionalArguments())
