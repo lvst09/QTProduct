@@ -114,7 +114,7 @@ QVector<float> & ClassWizard::getCitiesVec(QString countryName)
         return this->ws_aus;
     else if(countryName == "America")
         return this->ws_usa;
-    else if(countryName == "England")
+    else if(countryName == "United Kindom")
         return this->ws_eng;
     else if(countryName == "Germany")
         return this->ws_ger;
@@ -517,7 +517,7 @@ InfoPage::InfoPage(QWidget *parent)
     connect(edt_hnum,SIGNAL(textChanged(const QString &)),this,SLOT(edt_hnumTextChanged(const QString &)));
     connect(edt_mnum,SIGNAL(textChanged(const QString &)),this,SLOT(edt_mnumTextChanged(const QString &)));
 
-    QLabel * label_mspace = new QLabel(tr("Spacing between every array mm"));
+    QLabel * label_mspace = new QLabel(tr("Spacing between array mm"));
     edt_mspace = new QLineEdit();
     edt_mspace->setValidator(new QIntValidator(0, 1000, this));
     edt_mspace->setText("700");
@@ -534,6 +534,16 @@ InfoPage::InfoPage(QWidget *parent)
     vbox_number->addWidget(label_mspace);
     vbox_number->addWidget(edt_mspace);
 
+//    QGridLayout *grid_number = new QGridLayout;
+//    grid_number->addWidget(label_vnum, 1,0,1,1);
+//    grid_number->addWidget(cbo_vnum, 1,1,1,1);
+//    grid_number->addWidget(label_hnum, 2,0,1,1);
+//    grid_number->addWidget(edt_hnum, 2,1,1,1);
+//    grid_number->addWidget(label_mnum, 3,0,1,1);
+//    grid_number->addWidget(edt_mnum, 3,1,1,1);
+//    grid_number->addWidget(label_mspace, 4,0,1,1);
+//    grid_number->addWidget(edt_mspace, 4,1,1,1);
+
     vbox_number->addStretch(1);
     groupBox_number->setLayout(vbox_number);
 
@@ -548,19 +558,37 @@ InfoPage::InfoPage(QWidget *parent)
     QLabel * label_angle = new QLabel(tr("Console angle"));
     label_angle->setBuddy(cbo_angle);
 
+    QGridLayout *vbox_angle = new QGridLayout;
+    vbox_angle->addWidget(label_angle, 1,0,1,1);
+    vbox_angle->addWidget(cbo_angle, 1,1,1,1);
+
+    QWidget * widget_angle = new QWidget();
+    widget_angle->setParent(this);
+    widget_angle->setGeometry(QRect(0, 0, 650, 50));
+    widget_angle->setLayout(vbox_angle);
 
     QLabel * label_orientation = new QLabel(tr("Console orientation"));
     cbo_orientation = new QComboBox();
     cbo_orientation->addItem(QWidget::tr("south"));
     cbo_orientation->addItem(QWidget::tr("east/west"));
 
+    QGridLayout *vbox_orientation = new QGridLayout;
+    vbox_orientation->addWidget(label_orientation, 1,0,1,1);
+    vbox_orientation->addWidget(cbo_orientation, 1,1,1,1);
+
+    QWidget * widget_orientation = new QWidget();
+    widget_orientation->setParent(this);
+    widget_orientation->setGeometry(QRect(0, 0, 650, 50));
+    widget_orientation->setLayout(vbox_orientation);
+
+
     QLabel * label_country = new QLabel(tr("Country"));
     cbo_country = new QComboBox();
 
-    cbo_country->setFixedWidth(100);
+//    cbo_country->setFixedWidth(100);
     cbo_country->addItem(QWidget::tr("Australia"));
     cbo_country->addItem(QWidget::tr("America"));
-    cbo_country->addItem(QWidget::tr("England"));
+    cbo_country->addItem(QWidget::tr("United Kindom"));
     cbo_country->addItem(QWidget::tr("Germany"));
     cbo_country->addItem(QWidget::tr("Japan"));
     cbo_country->addItem(QWidget::tr("Netherlands"));
@@ -569,23 +597,20 @@ InfoPage::InfoPage(QWidget *parent)
 
     QLabel * label_city = new QLabel(tr("City"));
     cbo_city = new QComboBox();
-    cbo_city->setFixedWidth(90);
+//    cbo_city->setFixedWidth(90);
+
+    QGridLayout *vbox_country = new QGridLayout;
+    vbox_country->addWidget(label_country, 1,0,1,1);
+    vbox_country->addWidget(cbo_country, 1,1,1,1);
 
     QGridLayout *vbox_city = new QGridLayout;
-    vbox_city->addWidget(label_country, 1,0,1,1);
-    vbox_city->addWidget(cbo_country, 1,1,1,1);
-    vbox_city->addWidget(label_city, 1,2,1,1);
-    vbox_city->addWidget(cbo_city, 1,3,1,1);
+    vbox_city->addWidget(label_city, 1,0,1,1);
+    vbox_city->addWidget(cbo_city, 1,1,1,1);
 
-    QLabel * label_building_L = new QLabel(tr("Building "));
-//    edt_building_L = new QLineEdit();
-//    edt_building_L->setValidator(new QIntValidator(0, 1000, this));
-//    edt_building_L->setText("10");
-//    QLabel * label_building_W = new QLabel(tr("W"));
-//    edt_building_W = new QLineEdit();
-//    edt_building_W->setValidator(new QIntValidator(0, 1000, this));
-//    edt_building_W->setText("10");
-//    QLabel * label_building_H = new QLabel(tr("H"));
+//    vbox_city->addWidget(label_city, 1,2,1,1);
+//    vbox_city->addWidget(cbo_city, 1,3,1,1);
+
+    QLabel * label_building_L = new QLabel(tr("Building height mm"));
 
     cbo_building_H = new QComboBox();
 
@@ -608,6 +633,11 @@ InfoPage::InfoPage(QWidget *parent)
     vbox_building->addWidget(cbo_building_H, 1,1,1,1);
     vbox_building->addWidget(label_building_MM, 1,2,1,1);
 
+    QWidget * widget_country = new QWidget();
+    widget_country->setParent(this);
+    widget_country->setGeometry(QRect(0, 0, 650, 50));
+    widget_country->setLayout(vbox_country);
+
     QWidget * widget_city = new QWidget();
     widget_city->setParent(this);
     widget_city->setGeometry(QRect(0, 0, 650, 50));
@@ -621,15 +651,35 @@ InfoPage::InfoPage(QWidget *parent)
     QGroupBox *groupBox_value = new QGroupBox(tr("Ballast I Console info"));
 
     QVBoxLayout *vbox_value = new QVBoxLayout;
+    vbox_value->addWidget(widget_country);
     vbox_value->addWidget(widget_city);
     vbox_value->addWidget(widget_building);
-    vbox_value->addWidget(label_orientation);
-    vbox_value->addWidget(cbo_orientation);
-    vbox_value->addWidget(label_angle);
-    vbox_value->addWidget(cbo_angle);
+    vbox_value->addWidget(widget_orientation);
+    vbox_value->addWidget(widget_angle);
+
+    QGridLayout *vbox_grid_value = new QGridLayout;
+    vbox_grid_value->addWidget(label_country, 1,0,1,1);
+    vbox_grid_value->addWidget(cbo_country, 1,1,1,1);
+    vbox_grid_value->addWidget(label_city, 2,0,1,1);
+    vbox_grid_value->addWidget(cbo_city, 2,1,1,1);
+    vbox_grid_value->addWidget(label_building_L, 3,0,1,1);
+    vbox_grid_value->addWidget(cbo_building_H, 3,1,1,1);
+    vbox_grid_value->addWidget(label_angle, 4,0,1,1);
+    vbox_grid_value->addWidget(cbo_angle, 4,1,1,1);
+    vbox_grid_value->addWidget(label_orientation, 5,0,1,1);
+    vbox_grid_value->addWidget(cbo_orientation, 5,1,1,1);
+//    vbox_grid_value->addWidget(label_building_MM, 1,2,1,1);
+//    vbox_grid_value->addWidget(label_building_MM, 1,2,1,1);
+//    vbox_grid_value->addWidget(label_building_MM, 1,2,1,1);
+
+//    QGridLayout *vbox_building = new QGridLayout;
+//    vbox_building->addWidget(label_building_L, 1,0,1,1);
+//    vbox_building->addWidget(cbo_building_H, 1,1,1,1);
+//    vbox_building->addWidget(label_building_MM, 1,2,1,1);
 
     vbox_value->addStretch(1);
-    groupBox_value->setLayout(vbox_value);
+//    groupBox_value->setLayout(vbox_value);
+    groupBox_value->setLayout(vbox_grid_value);
 
     chk_mcon = new QCheckBox(tr("All array connected?"));
     chk_back_panel = new QCheckBox(tr("back wind plate?"));
@@ -728,7 +778,7 @@ void InfoPage::refreshCities(QString country)
     QVector<QString> vec ;
     if(country == "Australia")
         vec = this->parent_wizard->citys_aus;
-    else if(country == "England")
+    else if(country == "United Kindom")
         vec = this->parent_wizard->citys_eng;
     else if(country == "Germany")
         vec = this->parent_wizard->citys_ger;
@@ -752,16 +802,18 @@ void InfoPage::edt_hnumTextChanged(const QString &)
 {
     int origin_hnum = parent_wizard->info.hnum;
     parent_wizard->info.hnum = field("edt_hnum").toInt();//N
-    if( (origin_hnum - 11.99) * (parent_wizard->info.hnum - 11.99) <= 0 )
+//    if( (origin_hnum - 11.99) * (parent_wizard->info.hnum - 11.99) <= 0 )
         this->refreshLayout();
 }
 
 void InfoPage::edt_mnumTextChanged(const QString &)
 {
+
     int origin_mnum = parent_wizard->info.mnum;
     parent_wizard->info.mnum = field("edt_mnum").toInt();//M
-    if( (origin_mnum - 6.99) * (parent_wizard->info.mnum - 6.99) <= 0 )
+//    if( (origin_mnum - 6.99) * (parent_wizard->info.mnum - 6.99) <= 0 )
         this->refreshLayout();
+
 }
 
 void InfoPage::onCountryChanged(int index)
@@ -797,20 +849,21 @@ void InfoPage::refreshLayout()
 
     //QGridLayout *vbox_layout = new QGridLayout;
 
-
-    for(int i = 0 ; i< 7 ; i++)
+    int hnum = this->parent_wizard->info.hnum;
+//    QMessageBox::warning(0,"PATH",QString::number(hnum),QMessageBox::Yes);
+    int mnum = parent_wizard->info.mnum;
+    for(int i = 0 ; i< min(7,mnum) ; i++)
     {
-        for(int j = 0 ; j< 13 ; j+=1)
+        for(int j = 0 ; j< min(13,hnum) ; j+=1)
         {
             QLabel * label = new QLabel(layoutWidget);
-            if(parent_wizard->info.hnum >= 12 && j == 11){
+            if(hnum > 13 && j == 11){
 
-                if(parent_wizard->info.mnum >= 7 && i==5)
+                if( mnum > 7 && i==5)
                     continue;
 //                if(this->parent_wizard->info.mcon)
                 {
                     label->setPixmap(vertical_linepix);
-
                     if(layoutType == 1 || layoutType == 2){
                         label->setGeometry(i* (31 + 15)+30,j * 20,1,21);
                     }
@@ -818,13 +871,9 @@ void InfoPage::refreshLayout()
                         label->setGeometry(i* (31 + 15)+15,j * 20,1,21);
                     }
                 }
-
-
-
                 continue;
-            }else if(parent_wizard->info.mnum >= 7 && i==5){
+            }else if(parent_wizard->info.mnum > 7 && i==5){
 
-//                if(this->parent_wizard->info.mcon)
                 {
                     label->setPixmap(lineResPix);
                     label->setGeometry(i* (31 + 15)+ 0.5,j * 20 + 19,15,1);
@@ -832,22 +881,14 @@ void InfoPage::refreshLayout()
                     label->setPixmap(lineResPix);
                     label->setGeometry(i* (31 + 15) + 15.2,j * 20 + 19,15,1);
                 }
-
-
-
             }else{
                 label->setPixmap(resPix);
                 label->setGeometry(i* (31 + 15),j * 20,31,20);
             }
 
-//            label->setGeometry(i* (31 + 15),j * 20,31,20);
-
-
-//            vbox_layout->addWidget(label, i,j,1,1);
-
             if(i==6)
                 continue;
-            if(this->parent_wizard->info.mcon)
+            if(this->parent_wizard->info.mcon && i< min(7,mnum-1))
             {
                 label = new QLabel(layoutWidget);
                 label->setPixmap(lineResPix);
